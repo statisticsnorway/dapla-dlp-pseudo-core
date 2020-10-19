@@ -43,6 +43,7 @@ jobs:
     displayName: 'compile deploy app'
     # Job condition: Run these jobs on any branch, but not on tags
     condition: not(startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+    container: maven:3.6.3-openjdk-15
     # Steps in this Job
     steps:
       # Authenticate Maven to Nexus using predefined Service Connections
