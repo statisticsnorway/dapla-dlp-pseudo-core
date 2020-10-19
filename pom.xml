@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>no.ssb.dapla.dlp.pseudo</groupId>
   <artifactId>dapla-dlp-pseudo-core</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1-SNAPSHOT</version>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -25,7 +25,7 @@
     <connection>scm:git:git://github.com/statisticsnorway/dapla-dlp-pseudo-core.git</connection>
     <developerConnection>scm:git:git@github.com:statisticsnorway/dapla-dlp-pseudo-core.git</developerConnection>
     <url>https://github.com/statisticsnorway/dapla-dlp-pseudo-core</url>
-    <tag>dapla-dlp-pseudo-core-0.1.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <repositories>
