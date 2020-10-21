@@ -16,8 +16,8 @@ public class PseudoSecretTypeConverter implements TypeConverter<Map, PseudoSecre
         Optional<String> content = ConversionService.SHARED.convert(propertyMap.get("content"), String.class);
         Optional<String> type = ConversionService.SHARED.convert(propertyMap.get("type"), String.class);
 
-        return id.isPresent() && content.isPresent()
-          ? Optional.of(new PseudoSecret(id.get(), content.get(), type.orElse(null)))
+        return content.isPresent()
+          ? Optional.of(new PseudoSecret(id.orElse(null), content.get(), type.orElse(null)))
           : Optional.empty();
     }
 
