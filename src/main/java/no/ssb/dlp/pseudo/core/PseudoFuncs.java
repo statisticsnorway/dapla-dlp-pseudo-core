@@ -28,7 +28,7 @@ public class PseudoFuncs {
     static Map<PseudoFuncRule, PseudoFuncConfig> initPseudoFuncConfigs(Collection<PseudoFuncRule> pseudoRules, Collection<PseudoSecret> pseudoSecrets) {
 
         Map<String, PseudoSecret> pseudoSecretsMap = pseudoSecrets.stream().collect(
-          Collectors.toMap(s -> s.getId(), Function.identity()));
+          Collectors.toMap(s -> s.getName(), Function.identity()));
 
         return pseudoRules.stream().collect(Collectors.toMap(
           Function.identity(),
