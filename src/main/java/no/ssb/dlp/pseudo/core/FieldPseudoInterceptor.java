@@ -5,9 +5,6 @@ import no.ssb.avro.convert.core.FieldDescriptor;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFunc;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFuncInput;
 import no.ssb.dapla.parquet.FieldInterceptor;
-import no.ssb.dlp.pseudo.core.PseudoFuncRuleMatch;
-import no.ssb.dlp.pseudo.core.PseudoFuncs;
-import no.ssb.dlp.pseudo.core.PseudoOperation;
 
 import java.util.HashMap;
 import java.util.HashSet;
