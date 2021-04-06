@@ -2,12 +2,15 @@ package no.ssb.dlp.pseudo.core.csv;
 
 import com.google.common.base.Joiner;
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 import no.ssb.dlp.pseudo.core.map.MapTraverser;
 import no.ssb.dlp.pseudo.core.map.RecordMapSerializer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class CsvRecordMapSerializer implements RecordMapSerializer<String> {
 
@@ -42,9 +45,12 @@ public class CsvRecordMapSerializer implements RecordMapSerializer<String> {
 
     @Override
     public Flowable<String> serialize(Flowable<Map<String, Object>> recordStream) {
-        throw new RuntimeException("Not implemented yet!");
-    }
+        AtomicInteger position = new AtomicInteger(0);
 
+        return recordStream
+          .map(record -> serialize(record, position.getAndIncrement()))
+          .concatWith(Single.just("\\n"));
+    }
 
     public static class CsvSerializationException extends RuntimeException {
         public CsvSerializationException(String message) {
