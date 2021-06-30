@@ -7,6 +7,7 @@ import no.ssb.dapla.dlp.pseudo.func.PseudoFuncOutput;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import static no.ssb.dlp.pseudo.core.PseudoOperation.DEPSEUDONYMIZE;
 import static no.ssb.dlp.pseudo.core.PseudoOperation.PSEUDONYMIZE;
@@ -26,6 +27,10 @@ public class FieldPseudonymizer {
 
     public String depseudonymize(FieldDescriptor field, String varValue) {
         return process(DEPSEUDONYMIZE, field, varValue);
+    }
+
+    public Optional<PseudoFuncRuleMatch> match(FieldDescriptor field) {
+        return pseudoFuncs.findPseudoFunc(field);
     }
 
     private String process(PseudoOperation operation, FieldDescriptor field, String varValue) {
