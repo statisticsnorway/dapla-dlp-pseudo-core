@@ -31,6 +31,9 @@ public class FileSlayer {
 
     public static void deleteSilently(Path path) {
         delete(path, false);
+        if (path.toFile().exists()) {
+            log.warn("Unable to delete {}", path);
+        }
     }
 
     public static void deleteSilently(File file) {
