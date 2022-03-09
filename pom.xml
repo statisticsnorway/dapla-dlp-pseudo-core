@@ -3,22 +3,40 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>no.ssb.dapla.dlp.pseudo</groupId>
   <artifactId>dapla-dlp-pseudo-core</artifactId>
-  <version>0.1.11-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
 
   <properties>
+    <java.version>17</java.version>
+    <maven.compiler.release>${java.version}</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <jdk.version>15</jdk.version>
-    <maven.compiler.target>${jdk.version}</maven.compiler.target>
-    <maven.compiler.source>${jdk.version}</maven.compiler.source>
+    <artifact-registry.url>artifactregistry://europe-north1-maven.pkg.dev/artifact-registry-14da</artifact-registry.url>
 
-    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-    <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
-    <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
-    <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-
-    <micronaut.version>2.4.2</micronaut.version>
+    <!-- Dependency versions -->
+    <avro-buddy-core.version>1.0.0</avro-buddy-core.version>
+    <dapla-dlp-pseudo-func.version>1.0.1</dapla-dlp-pseudo-func.version>
+    <dapla-storage-client.version>5.0.0</dapla-storage-client.version>
+    <guava.version>31.0.1-jre</guava.version>
+    <jsonassert.version>1.5.0</jsonassert.version>
+    <logback.version>1.2.10</logback.version>
     <lombok.version>1.18.20</lombok.version>
+    <micronaut.version>2.4.2</micronaut.version>
+    <rxjava-extras.version>0.1.38</rxjava-extras.version>
+    <tika.version>1.24.1</tika.version>
+    <univocity-parsers.version>2.8.4</univocity-parsers.version>
+    <zip4j.version>2.7.0</zip4j.version>
+
+    <!-- Plugin/extension versions -->
+    <artifactregistry-maven-wagon.version>2.1.4</artifactregistry-maven-wagon.version>
+    <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
+    <maven-compiler-plugin.version>3.10.0</maven-compiler-plugin.version>
+    <maven-failsafe-plugin.version>3.0.0-M5</maven-failsafe-plugin.version>
+    <maven-javadoc-plugin.version>3.3.0</maven-javadoc-plugin.version>
+    <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
+    <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
+    <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+    <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
+    <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
   </properties>
 
   <scm>
@@ -71,17 +89,17 @@
     <dependency>
       <groupId>no.ssb.dapla.dlp.pseudo.func</groupId>
       <artifactId>dapla-dlp-pseudo-func</artifactId>
-      <version>0.5.3</version>
+      <version>${dapla-dlp-pseudo-func.version}</version>
     </dependency>
     <dependency>
       <groupId>no.ssb.avro.convert.core</groupId>
       <artifactId>avro-buddy-core</artifactId>
-      <version>0.0.6</version>
+      <version>${avro-buddy-core.version}</version>
     </dependency>
     <dependency>
       <groupId>no.ssb.dapla.storage</groupId>
       <artifactId>dapla-storage-client</artifactId>
-      <version>4.2.0</version>
+      <version>${dapla-storage-client.version}</version>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -92,32 +110,32 @@
     <dependency>
      <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>30.1.1-jre</version>
+      <version>${guava.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-core</artifactId>
-      <version>1.24.1</version>
+      <version>${tika.version}</version>
     </dependency>
     <dependency>
       <groupId>net.lingala.zip4j</groupId>
       <artifactId>zip4j</artifactId>
-      <version>2.7.0</version>
+      <version>${zip4j.version}</version>
     </dependency>
     <dependency>
       <groupId>com.github.davidmoten</groupId>
       <artifactId>rxjava2-extras</artifactId>
-      <version>0.1.38</version>
+      <version>${rxjava-extras.version}</version>
     </dependency>
     <dependency>
       <groupId>com.univocity</groupId>
       <artifactId>univocity-parsers</artifactId>
-      <version>2.8.4</version>
+      <version>${univocity-parsers.version}</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.2.3</version>
+      <version>${logback.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -144,7 +162,7 @@
     <dependency>
       <groupId>org.skyscreamer</groupId>
       <artifactId>jsonassert</artifactId>
-      <version>1.5.0</version>
+      <version>${jsonassert.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -182,8 +200,8 @@
               </path>
             </annotationProcessorPaths>
             <compilerArgs>
-              <arg>-Amicronaut.processing.group=no.ssb.rawdata.converter</arg>
-              <arg>-Amicronaut.processing.module=rawdata-converter-coredux</arg>
+              <arg>-Amicronaut.processing.group=no.ssb.dlp.pseudo.core</arg>
+              <arg>-Amicronaut.processing.module=dapla-dlp-pseudo-core</arg>
             </compilerArgs>
           </configuration>
           <executions>
@@ -245,58 +263,44 @@
         <artifactId>maven-compiler-plugin</artifactId>
       </plugin>
     </plugins>
+    <extensions>
+      <extension>
+        <groupId>com.google.cloud.artifactregistry</groupId>
+        <artifactId>artifactregistry-maven-wagon</artifactId>
+        <version>${artifactregistry-maven-wagon.version}</version>
+      </extension>
+    </extensions>
   </build>
 
   <profiles>
     <profile>
-      <id>ssb-bip</id>
-      <repositories>
-        <repository>
-          <id>ssb-bip-releases</id>
-          <url>https://nexus.prod-bip-ci.ssb.no/repository/maven-releases/</url>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-        </repository>
-        <repository>
-          <id>ssb-bip-snapshots</id>
-          <url>https://nexus.prod-bip-ci.ssb.no/repository/maven-releases/</url>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-        </repository>
-      </repositories>
-      <distributionManagement>
-        <repository>
-          <id>ssb-bip-releases</id>
-          <name>SSB Nexus Releases</name>
-          <url>https://nexus.prod-bip-ci.ssb.no/repository/maven-releases/</url>
-        </repository>
-        <snapshotRepository>
-          <id>ssb-bip-snapshots</id>
-          <name>SSB Snapshot Repository</name>
-          <url>https://nexus.prod-bip-ci.ssb.no/repository/maven-snapshots/</url>
-        </snapshotRepository>
-      </distributionManagement>
-    </profile>
-    <profile>
       <id>coverage</id>
       <properties>
-        <sonar.coverage.jacoco.xmlReportPaths>
-          target/site/jacoco/jacoco.xml
-        </sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
       </properties>
       <build>
         <plugins>
           <plugin>
             <groupId>org.sonarsource.scanner.maven</groupId>
             <artifactId>sonar-maven-plugin</artifactId>
-            <version>3.7.0.1746</version>
+            <version>${sonar-maven-plugin.version}</version>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>${maven-checkstyle-plugin.version}</version>
+            <dependencies>
+              <dependency>
+                <groupId>com.puppycrawl.tools</groupId>
+                <artifactId>checkstyle</artifactId>
+                <version>${checkstyle.version}</version>
+              </dependency>
+            </dependencies>
           </plugin>
           <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.8.6</version>
+            <version>${jacoco-maven-plugin.version}</version>
             <executions>
               <execution>
                 <id>prepare-agent</id>
@@ -314,6 +318,41 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <id>ssb-bip</id>
+      <repositories>
+        <repository>
+          <id>artifact-registry</id>
+          <url>${artifact-registry.url}/maven-releases</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>artifact-registry-snapshots</id>
+          <url>${artifact-registry.url}/maven-snapshots</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+      <distributionManagement>
+        <repository>
+          <id>artifact-registry</id>
+          <url>${artifact-registry.url}/maven-releases</url>
+        </repository>
+        <snapshotRepository>
+          <id>artifact-registry-snapshots</id>
+          <url>${artifact-registry.url}/maven-snapshots</url>
+        </snapshotRepository>
+      </distributionManagement>
     </profile>
   </profiles>
 
