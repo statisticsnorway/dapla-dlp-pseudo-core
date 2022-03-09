@@ -28,6 +28,7 @@
 
     <!-- Plugin/extension versions -->
     <artifactregistry-maven-wagon.version>2.1.4</artifactregistry-maven-wagon.version>
+    <checkstyle.version>9.3</checkstyle.version>
     <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
     <maven-compiler-plugin.version>3.10.0</maven-compiler-plugin.version>
     <maven-failsafe-plugin.version>3.0.0-M5</maven-failsafe-plugin.version>
