@@ -1,7 +1,7 @@
 package no.ssb.dlp.pseudo.core.map;
 
-import io.micronaut.test.annotation.MicronautTest;
-import no.ssb.dlp.pseudo.core.map.MapTraverser;
+
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import no.ssb.dlp.pseudo.core.util.Json;
 import org.junit.jupiter.api.Test;
 
