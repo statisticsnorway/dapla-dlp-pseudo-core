@@ -22,11 +22,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -133,7 +129,8 @@ public class Zips {
             }
             return Bytes.from(tmpZipFile.toFile())
               .doAfterTerminate(() -> {
-                  if (! System.getProperty("dapla.pseudo.debug").equals("true")) {
+                  String debug = Optional.ofNullable(System.getProperty("dapla.pseudo.debug")).orElse("false");
+                  if (! debug.equals("true")) {
                       deleteSilently(tmpZipFile);
                   }
               });
