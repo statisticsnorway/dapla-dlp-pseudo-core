@@ -14,13 +14,13 @@
 
     <!-- Dependency versions -->
     <avro-buddy-core.version>1.0.0</avro-buddy-core.version>
-    <dapla-dlp-pseudo-func.version>1.0.1</dapla-dlp-pseudo-func.version>
+    <dapla-dlp-pseudo-func.version>1.0.2</dapla-dlp-pseudo-func.version>
     <dapla-storage-client.version>5.0.0</dapla-storage-client.version>
     <guava.version>31.1-jre</guava.version>
     <jsonassert.version>1.5.0</jsonassert.version>
     <logback.version>1.2.10</logback.version>
     <lombok.version>1.18.22</lombok.version>
-    <micronaut.version>3.3.4</micronaut.version>
+    <micronaut.version>3.4.1</micronaut.version>
     <rxjava-extras.version>0.2.1.1</rxjava-extras.version>
     <tika.version>1.24.1</tika.version>
     <univocity-parsers.version>2.9.1</univocity-parsers.version>
