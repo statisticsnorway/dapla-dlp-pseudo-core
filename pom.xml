@@ -24,7 +24,7 @@
     <rxjava-extras.version>0.2.1.1</rxjava-extras.version>
     <tika.version>1.24.1</tika.version>
     <univocity-parsers.version>2.9.1</univocity-parsers.version>
-    <zip4j.version>2.9.1</zip4j.version>
+    <zip4j.version>2.10.0</zip4j.version>
 
     <!-- Plugin/extension versions -->
     <artifactregistry-maven-wagon.version>2.1.4</artifactregistry-maven-wagon.version>
