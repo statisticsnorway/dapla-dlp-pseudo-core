@@ -52,10 +52,10 @@ public class CsvStreamPseudonymizer implements StreamPseudonymizer {
     }
 
     private <T> void processItem(CsvProcessorContext<T> ctx, Emitter<T> emitter)  {
-        Record record = ctx.csvParser.parseNextRecord();
-        if (record != null) {
+        Record r = ctx.csvParser.parseNextRecord();
+        if (r != null) {
             int position = ctx.currentPosition.getAndIncrement();
-            Map<String, Object> recordMap = record.fillFieldObjectMap(new LinkedHashMap<>());
+            Map<String, Object> recordMap = r.fillFieldObjectMap(new LinkedHashMap<>());
             Map<String, Object> processedRecord = ctx.operation == PseudoOperation.PSEUDONYMIZE
               ? recordPseudonymizer.pseudonymize(recordMap)
               : recordPseudonymizer.depseudonymize(recordMap);

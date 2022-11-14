@@ -35,20 +35,15 @@ public class RxUtil {
 
             data.subscribeOn(Schedulers.io())
               .doOnError(e -> emitter.onError(new FileWriteException("Error streaming data to file", e)))
-              .doAfterTerminate(() -> writer.close())
+              .doAfterTerminate(writer::close)
               .subscribe(
-                s -> {
-                    writer.write(s);
-                },
+                writer::write,
                 e -> {},
-                () -> {
-                    emitter.onSuccess(FileWriteResult.builder()
+                () -> emitter.onSuccess(FileWriteResult.builder()
                         .duration(stopwatch.stop().elapsed())
                         .bytesWritten(Files.size(targetFile.toPath()))
                         .file(targetFile)
-                      .build()
-                    );
-                }
+                        .build())
               );
         });
     }

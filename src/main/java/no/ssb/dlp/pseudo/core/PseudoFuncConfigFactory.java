@@ -1,14 +1,19 @@
 package no.ssb.dlp.pseudo.core;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFuncConfig;
+import no.ssb.dapla.dlp.pseudo.func.daead.DaeadFunc;
+import no.ssb.dapla.dlp.pseudo.func.daead.DaeadFuncConfig;
 import no.ssb.dapla.dlp.pseudo.func.fpe.Alphabets;
 import no.ssb.dapla.dlp.pseudo.func.fpe.FpeFunc;
 import no.ssb.dapla.dlp.pseudo.func.fpe.FpeFuncConfig;
+import no.ssb.dapla.dlp.pseudo.func.map.MapFunc;
+import no.ssb.dapla.dlp.pseudo.func.map.MapFuncConfig;
+import no.ssb.dapla.dlp.pseudo.func.redact.RedactFunc;
+import no.ssb.dapla.dlp.pseudo.func.redact.RedactFuncConfig;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,11 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import static no.ssb.dapla.dlp.pseudo.func.fpe.Alphabets.alphabetNameOf;
-import static no.ssb.dapla.dlp.pseudo.func.text.CharacterGroup.ALPHANUMERIC;
-import static no.ssb.dapla.dlp.pseudo.func.text.CharacterGroup.ALPHANUMERIC_NO;
-import static no.ssb.dapla.dlp.pseudo.func.text.CharacterGroup.DIGITS;
-import static no.ssb.dapla.dlp.pseudo.func.text.CharacterGroup.SYMBOLS;
-import static no.ssb.dapla.dlp.pseudo.func.text.CharacterGroup.WHITESPACE;
+import static no.ssb.dapla.dlp.pseudo.func.text.CharacterGroup.*;
 
 // TODO: Move or remove presets
 
@@ -30,24 +31,64 @@ class PseudoFuncConfigFactory {
     private static final Map<String, PseudoFuncConfigPreset> PSEUDO_CONFIG_PRESETS_MAP = new HashMap<>();
 
     static {
-        PSEUDO_CONFIG_PRESETS_MAP.putAll(Maps.uniqueIndex(ImmutableList.of(
+        PSEUDO_CONFIG_PRESETS_MAP.putAll(Maps.uniqueIndex(List.of(
           fpePseudoFuncConfigPreset("fpe-text", alphabetNameOf(ALPHANUMERIC, WHITESPACE, SYMBOLS)),
           fpePseudoFuncConfigPreset("fpe-text_no", alphabetNameOf(ALPHANUMERIC_NO, WHITESPACE, SYMBOLS)),
-          fpePseudoFuncConfigPreset("fpe-fnr", alphabetNameOf(DIGITS))
+          fpePseudoFuncConfigPreset("fpe-fnr", alphabetNameOf(DIGITS)),
+          mappingPseudoFuncConfigPreset("map-db"),
+          redactPseudoFuncConfigPreset("redact"),
+          redactRegexPseudoFuncConfigPreset("redact-regex"),
+          tinkDaeadPseudoFuncConfigPreset("tink-daead")
+
         ), PseudoFuncConfigPreset::getFuncName));
     }
 
     private PseudoFuncConfigFactory() {}
+
+    private static PseudoFuncConfigPreset mappingPseudoFuncConfigPreset(String funcName) {
+        if (!funcName.startsWith("map-")) {
+            throw new IllegalArgumentException("Mapping functions must be prefixed with 'map-'");
+        }
+
+        return new PseudoFuncConfigPreset(funcName,
+                Map.of(PseudoFuncConfig.Param.FUNC_IMPL, MapFunc.class.getName()),
+                List.of(MapFuncConfig.Param.CONTEXT)
+        );
+    }
+
+    private static PseudoFuncConfigPreset redactPseudoFuncConfigPreset(String funcName) {
+        return new PseudoFuncConfigPreset(funcName,
+                Map.of(PseudoFuncConfig.Param.FUNC_IMPL, RedactFunc.class.getName()),
+                List.of(RedactFuncConfig.Param.PLACEHOLDER)
+        );
+    }
+
+    private static PseudoFuncConfigPreset redactRegexPseudoFuncConfigPreset(String funcName) {
+        return new PseudoFuncConfigPreset(funcName,
+                Map.of(PseudoFuncConfig.Param.FUNC_IMPL, RedactFunc.class.getName()),
+                List.of(RedactFuncConfig.Param.PLACEHOLDER, RedactFuncConfig.Param.REGEX)
+        );
+    }
+
+    private static PseudoFuncConfigPreset tinkDaeadPseudoFuncConfigPreset(String funcName) {
+        if (!funcName.startsWith("tink-")) {
+            throw new IllegalArgumentException("Tink functions must be prefixed with 'tink-'");
+        }
+
+        return new PseudoFuncConfigPreset(funcName,
+                Map.of(PseudoFuncConfig.Param.FUNC_IMPL, DaeadFunc.class.getName()),
+                List.of(DaeadFuncConfig.Param.DEK_ID)
+        );
+    }
 
     private static PseudoFuncConfigPreset fpePseudoFuncConfigPreset(String funcName, String alphabet) {
         if (!funcName.startsWith("fpe-")) {
             throw new IllegalArgumentException("FPE functions must be prefixed with 'fpe-'");
         }
 
-        return new PseudoFuncConfigPreset(funcName, ImmutableMap.of(
-          PseudoFuncConfig.Param.FUNC_IMPL, FpeFunc.class.getName(),
-          FpeFuncConfig.Param.ALPHABET, alphabet
-        ), ImmutableList.of(FpeFuncConfig.Param.KEY_ID));
+        return new PseudoFuncConfigPreset(funcName,
+                Map.of(PseudoFuncConfig.Param.FUNC_IMPL, FpeFunc.class.getName(), FpeFuncConfig.Param.ALPHABET, alphabet),
+                List.of(FpeFuncConfig.Param.KEY_ID));
     }
 
     static PseudoFuncConfigPreset getConfigPreset(FuncDeclaration funcDecl) {

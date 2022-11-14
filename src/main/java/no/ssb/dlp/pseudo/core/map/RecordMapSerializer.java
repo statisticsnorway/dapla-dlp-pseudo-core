@@ -13,11 +13,11 @@ public interface RecordMapSerializer<T> {
     /**
      * Serialize a RecordMap to some implementation specific format.
      *
-     * @param record the RecordMap to serialize
+     * @param r the RecordMap to serialize
      * @param position the record's sequence number
      * @return a serialized RecordMap
      */
-    T serialize(Map<String, Object> record, int position);
+    T serialize(Map<String, Object> r, int position);
 
     /**
      * Serialize a {@link Flowable} of records.
