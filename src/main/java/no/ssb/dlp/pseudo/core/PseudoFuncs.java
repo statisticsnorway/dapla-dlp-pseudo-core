@@ -11,7 +11,10 @@ import no.ssb.dapla.dlp.pseudo.func.daead.DaeadFunc;
 import no.ssb.dapla.dlp.pseudo.func.daead.DaeadFuncConfig;
 import no.ssb.dapla.dlp.pseudo.func.fpe.FpeFunc;
 import no.ssb.dapla.dlp.pseudo.func.fpe.FpeFuncConfig;
+import no.ssb.dlp.pseudo.core.exception.NoSuchPseudoKeyException;
 import no.ssb.dlp.pseudo.core.field.FieldDescriptor;
+import no.ssb.dlp.pseudo.core.tink.model.EncryptedKeysetWrapper;
+import no.ssb.dlp.pseudo.core.util.Json;
 
 import java.util.*;
 import java.util.function.Function;
@@ -50,22 +53,34 @@ public class PseudoFuncs {
               }
 
               else if (DaeadFunc.class.getName().equals(funcConfig.getFuncImpl())) {
-                  enrichDaeadFuncConfig(funcConfig, pseudoKeysetMap);
+                  enrichDaeadFuncConfig(funcConfig, pseudoKeysetMap, pseudoSecrets);
               }
 
               return funcConfig;
           }));
     }
 
-    private static void enrichDaeadFuncConfig(PseudoFuncConfig funcConfig, Map<String, PseudoKeyset> keysetMap) {
+    private static void enrichDaeadFuncConfig(PseudoFuncConfig funcConfig, Map<String, PseudoKeyset> keysetMap, Collection<PseudoSecret> pseudoSecrets) {
         String dekId = funcConfig.getRequired(DaeadFuncConfig.Param.DEK_ID, String.class);
 
-        // TODO: Support creating new key material instead of failing
-        PseudoKeyset keyset = Optional.ofNullable(keysetMap.get(dekId))
-                .orElseThrow(() -> new RuntimeException("No keyset with ID=" + dekId));
+        // TODO: Support creating new key material instead of failing if none found?
+        PseudoKeyset keyset =
+                // Use keyset from provided map
+                Optional.ofNullable(keysetMap.get(dekId))
+
+                // Or search for keyset among secrets
+                .or(() -> {
+                    // Find secret matching key id
+                    PseudoSecret secret = pseudoSecrets.stream().filter(s -> s.getId().endsWith(dekId)).findFirst().orElse(null);
+                    if (secret == null) {
+                        return Optional.empty();
+                    }
+                    EncryptedKeysetWrapper keysetWrapper = Json.toObject(EncryptedKeysetWrapper.class, new String(secret.getContent()));
+                    return Optional.of(keysetWrapper);
+                })
+                .orElseThrow(() -> new NoSuchPseudoKeyException("No keyset with ID=" + dekId));
 
         try {
-
             KeysetHandle keysetHandle = KeysetHandle.read(
                     JsonKeysetReader.withString(keyset.toJson()),
                     KmsClients.get(keyset.getKekUri()).getAead(keyset.getKekUri())
