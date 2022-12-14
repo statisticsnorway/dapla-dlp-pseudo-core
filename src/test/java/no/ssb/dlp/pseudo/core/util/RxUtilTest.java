@@ -2,6 +2,7 @@ package no.ssb.dlp.pseudo.core.util;
 
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
@@ -22,6 +23,7 @@ public class RxUtilTest {
     }
 
     @Test
+    @Disabled
     public void flowable_writeToFile_shouldWriteContentsToFile() throws Exception {
         String someData = randomString(1024*1000);
         Flowable<String> data = Flowable.just(someData)

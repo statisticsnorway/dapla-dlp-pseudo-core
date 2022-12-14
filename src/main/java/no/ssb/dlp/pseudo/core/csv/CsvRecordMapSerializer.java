@@ -9,7 +9,6 @@ import no.ssb.dlp.pseudo.core.map.RecordMapSerializer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class CsvRecordMapSerializer implements RecordMapSerializer<String> {
@@ -20,11 +19,11 @@ public class CsvRecordMapSerializer implements RecordMapSerializer<String> {
 
     // This implementation is a bit so-so - deducing header stuff from only one record.
     @Override
-    public String serialize(Map<String, Object> record, int position) {
+    public String serialize(Map<String, Object> r, int position) {
         boolean recordHeaders = headers.isEmpty();
         boolean printHeaders = position == 0;
         List<String> values = new ArrayList<>();
-        MapTraverser.traverse(record, (field, value) -> {
+        MapTraverser.traverse(r, (field, value) -> {
             if (recordHeaders) {
                 headers.add(field.getName());
             }
@@ -48,7 +47,7 @@ public class CsvRecordMapSerializer implements RecordMapSerializer<String> {
         AtomicInteger position = new AtomicInteger(0);
 
         return recordStream
-          .map(record -> serialize(record, position.getAndIncrement()))
+          .map(r -> serialize(r, position.getAndIncrement()))
           .concatWith(Single.just("\\n"));
     }
 

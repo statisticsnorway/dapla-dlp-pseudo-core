@@ -11,9 +11,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import no.ssb.dlp.pseudo.core.PseudoOperation;
-import no.ssb.dlp.pseudo.core.StreamPseudonymizer;
+import no.ssb.dlp.pseudo.core.StreamProcessor;
 import no.ssb.dlp.pseudo.core.map.RecordMap;
-import no.ssb.dlp.pseudo.core.map.RecordMapPseudonymizer;
+import no.ssb.dlp.pseudo.core.map.RecordMapProcessor;
 import no.ssb.dlp.pseudo.core.map.RecordMapSerializer;
 
 import java.io.IOException;
@@ -21,13 +21,9 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * @deprecated Use {@link JsonStreamProcessor} instead
- */
 @RequiredArgsConstructor
 @Slf4j
-@Deprecated
-public class JsonStreamPseudonymizer implements StreamPseudonymizer {
+public class JsonStreamProcessor implements StreamProcessor {
 
     private static final ObjectMapper OBJECT_MAPPER;
 
@@ -37,15 +33,10 @@ public class JsonStreamPseudonymizer implements StreamPseudonymizer {
         OBJECT_MAPPER.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
 
-    private final RecordMapPseudonymizer recordPseudonymizer;
+    private final RecordMapProcessor recordMapProcessor;
 
     @Override
-    public <T> Flowable<T> pseudonymize(InputStream is, RecordMapSerializer<T> serializer) {
-        return processStream(PseudoOperation.PSEUDONYMIZE, is, serializer);
-    }
-
-    @Override
-    public <T> Flowable<T> depseudonymize(InputStream is, RecordMapSerializer<T> serializer) {
+    public <T> Flowable<T> process(InputStream is, RecordMapSerializer<T> serializer) {
         return processStream(PseudoOperation.DEPSEUDONYMIZE, is, serializer);
     }
 
@@ -72,9 +63,7 @@ public class JsonStreamPseudonymizer implements StreamPseudonymizer {
         if (jsonToken != null) {
             int position = ctx.currentPosition.getAndIncrement();
             Map<String, Object> r = OBJECT_MAPPER.readValue(jsonParser, RecordMap.class);
-            Map<String, Object> processedRecord = ctx.operation == PseudoOperation.PSEUDONYMIZE
-              ? recordPseudonymizer.pseudonymize(r)
-              : recordPseudonymizer.depseudonymize(r);
+            Map<String, Object> processedRecord = recordMapProcessor.process(r);
             emitter.onNext(ctx.getSerializer().serialize(processedRecord, position));
         }
         else {

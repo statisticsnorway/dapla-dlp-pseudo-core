@@ -158,7 +158,7 @@ public class PseudoFileSource {
                     throw new PseudoException("Error concatenating file input streams", e);
                 }
             })
-            .collect(Collectors.toList()))
+            .toList())
         );
     }
 

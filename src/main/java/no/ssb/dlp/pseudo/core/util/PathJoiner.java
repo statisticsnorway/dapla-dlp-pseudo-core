@@ -1,8 +1,11 @@
 package no.ssb.dlp.pseudo.core.util;
 
+import lombok.experimental.UtilityClass;
+
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+@UtilityClass
 public class PathJoiner {
     public static String joinAndKeepLeadingSlash(String... pathFragments) {
         return "/" + joinWithoutLeadingOrTrailingSlash(pathFragments);

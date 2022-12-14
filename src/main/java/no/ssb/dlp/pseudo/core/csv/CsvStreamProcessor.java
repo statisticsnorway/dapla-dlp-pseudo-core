@@ -9,7 +9,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import no.ssb.dlp.pseudo.core.PseudoOperation;
+import no.ssb.dlp.pseudo.core.StreamProcessor;
 import no.ssb.dlp.pseudo.core.StreamPseudonymizer;
+import no.ssb.dlp.pseudo.core.json.JsonStreamProcessor;
+import no.ssb.dlp.pseudo.core.map.RecordMapProcessor;
 import no.ssb.dlp.pseudo.core.map.RecordMapPseudonymizer;
 import no.ssb.dlp.pseudo.core.map.RecordMapSerializer;
 
@@ -19,39 +22,30 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * @deprecated Use {@link CsvStreamProcessor} instead
- */
 @RequiredArgsConstructor
 @Slf4j
-@Deprecated
-public class CsvStreamPseudonymizer implements StreamPseudonymizer {
+public class CsvStreamProcessor implements StreamProcessor {
 
-    private final RecordMapPseudonymizer recordPseudonymizer;
-
-    @Override
-    public <T> Flowable<T> pseudonymize(InputStream is, RecordMapSerializer<T> serializer) {
-        return processStream(PseudoOperation.PSEUDONYMIZE, is, serializer);
-    }
+    private final RecordMapProcessor recordMapProcessor;
 
     @Override
-    public <T> Flowable<T> depseudonymize(InputStream is, RecordMapSerializer<T> serializer) {
-        return processStream(PseudoOperation.DEPSEUDONYMIZE, is, serializer);
+    public <T> Flowable<T> process(InputStream is, RecordMapSerializer<T> serializer) {
+        return processStream(is, serializer);
     }
 
-    <T> CsvProcessorContext<T> initCsvProcessorContext(PseudoOperation operation, InputStream is, RecordMapSerializer<T> serializer) throws IOException {
+    <T> CsvProcessorContext<T> initCsvProcessorContext(InputStream is, RecordMapSerializer<T> serializer) throws IOException {
         CsvParserSettings settings = new CsvParserSettings();
         settings.detectFormatAutomatically();
         settings.setHeaderExtractionEnabled(true);
         final CsvParser csvParser = new CsvParser(settings);
         csvParser.beginParsing(is);
-        return new CsvProcessorContext<>(operation, csvParser, serializer);
+        return new CsvProcessorContext<>(csvParser, serializer);
     }
 
-    private <T> Flowable<T> processStream(PseudoOperation operation, InputStream is, RecordMapSerializer<T> serializer) {
+    private <T> Flowable<T> processStream(InputStream is, RecordMapSerializer<T> serializer) {
         return Flowable.generate(
-          () -> initCsvProcessorContext(operation, is, serializer),
-          (ctx, emitter) -> {this.processItem(ctx, emitter);}
+                () -> initCsvProcessorContext(is, serializer),
+                (ctx, emitter) -> {this.processItem(ctx, emitter);}
         );
     }
 
@@ -60,9 +54,7 @@ public class CsvStreamPseudonymizer implements StreamPseudonymizer {
         if (r != null) {
             int position = ctx.currentPosition.getAndIncrement();
             Map<String, Object> recordMap = r.fillFieldObjectMap(new LinkedHashMap<>());
-            Map<String, Object> processedRecord = ctx.operation == PseudoOperation.PSEUDONYMIZE
-              ? recordPseudonymizer.pseudonymize(recordMap)
-              : recordPseudonymizer.depseudonymize(recordMap);
+            Map<String, Object> processedRecord = recordMapProcessor.process(recordMap);
             emitter.onNext(ctx.getSerializer().serialize(processedRecord, position));
         }
         else {
@@ -72,7 +64,6 @@ public class CsvStreamPseudonymizer implements StreamPseudonymizer {
 
     @Value
     static class CsvProcessorContext<T> {
-        private final PseudoOperation operation;
         private final CsvParser csvParser;
         private final RecordMapSerializer<T> serializer;
         private final AtomicInteger currentPosition = new AtomicInteger();

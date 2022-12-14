@@ -2,8 +2,8 @@ package no.ssb.dlp.pseudo.core.map;
 
 import io.micronaut.http.MediaType;
 import no.ssb.dlp.pseudo.core.csv.CsvRecordMapSerializer;
-import no.ssb.dlp.pseudo.core.json.JsonRecordMapSerializer;
 import no.ssb.dlp.pseudo.core.file.MoreMediaTypes;
+import no.ssb.dlp.pseudo.core.json.JsonRecordMapSerializer;
 
 public class RecordMapSerializerFactory {
 
