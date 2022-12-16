@@ -8,4 +8,13 @@ public class KeyInfo {
     private KeyStatus status;
     private Integer keyId;
     private OutputPrefixType outputPrefixType;
+
+    public static KeyInfo from(com.google.crypto.tink.proto.KeysetInfo.KeyInfo i) {
+        KeyInfo keyInfo = new KeyInfo();
+        keyInfo.setKeyId(i.getKeyId());
+        keyInfo.setTypeUrl(i.getTypeUrl());
+        keyInfo.setStatus(KeyStatus.from(i.getStatus()));
+        keyInfo.setOutputPrefixType(OutputPrefixType.from(i.getOutputPrefixType()));
+        return keyInfo;
+    }
 }

@@ -81,9 +81,10 @@ public class PseudoFuncs {
                 .orElseThrow(() -> new NoSuchPseudoKeyException("No keyset with ID=" + dekId));
 
         try {
+            String keyUri = keyset.getKekUri().toString();
             KeysetHandle keysetHandle = KeysetHandle.read(
                     JsonKeysetReader.withString(keyset.toJson()),
-                    KmsClients.get(keyset.getKekUri()).getAead(keyset.getKekUri())
+                    KmsClients.get(keyUri).getAead(keyUri)
             );
 
             DeterministicAead daead = keysetHandle.getPrimitive(DeterministicAead.class);
