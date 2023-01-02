@@ -3,7 +3,6 @@ package no.ssb.dlp.pseudo.core.tink.model;
 import lombok.Data;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Data
