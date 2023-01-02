@@ -35,7 +35,7 @@ class PseudoFuncConfigFactory {
           fpePseudoFuncConfigPreset("fpe-text", alphabetNameOf(ALPHANUMERIC, WHITESPACE, SYMBOLS)),
           fpePseudoFuncConfigPreset("fpe-text_no", alphabetNameOf(ALPHANUMERIC_NO, WHITESPACE, SYMBOLS)),
           fpePseudoFuncConfigPreset("fpe-fnr", alphabetNameOf(DIGITS)),
-          mappingPseudoFuncConfigPreset("map-db"),
+          mappingPseudoFuncConfigPreset("map-sid"),
           redactPseudoFuncConfigPreset("redact"),
           redactRegexPseudoFuncConfigPreset("redact-regex"),
           tinkDaeadPseudoFuncConfigPreset("tink-daead")
