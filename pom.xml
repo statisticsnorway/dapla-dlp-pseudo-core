@@ -21,7 +21,7 @@
     <logback.version>1.4.5</logback.version>
     <lombok.version>1.18.22</lombok.version>
     <micronaut.version>3.8.0</micronaut.version>
-    <rxjava-extras.version>0.2.1.1</rxjava-extras.version>
+    <rxjava-extras.version>0.2.2</rxjava-extras.version>
     <tika.version>1.24.1</tika.version>
     <tink.version>1.7.0</tink.version>
     <univocity-parsers.version>2.9.1</univocity-parsers.version>
