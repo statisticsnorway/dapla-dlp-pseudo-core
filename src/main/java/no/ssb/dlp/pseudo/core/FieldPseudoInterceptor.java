@@ -5,6 +5,8 @@ import no.ssb.dapla.dlp.pseudo.func.PseudoFunc;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFuncInput;
 import no.ssb.dapla.parquet.FieldInterceptor;
 import no.ssb.dlp.pseudo.core.field.FieldDescriptor;
+import no.ssb.dlp.pseudo.core.func.PseudoFuncRuleMatch;
+import no.ssb.dlp.pseudo.core.func.PseudoFuncs;
 
 import java.util.*;
 

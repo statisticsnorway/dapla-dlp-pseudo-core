@@ -2,11 +2,7 @@ package no.ssb.dlp.pseudo.core.util;
 
 import org.junit.jupiter.api.Test;
 
-import static no.ssb.dlp.pseudo.core.util.PathJoiner.joinAndKeepLeadingAndTrailingSlash;
-import static no.ssb.dlp.pseudo.core.util.PathJoiner.joinAndKeepLeadingSlash;
-import static no.ssb.dlp.pseudo.core.util.PathJoiner.joinAndKeepTrailingSlash;
-import static no.ssb.dlp.pseudo.core.util.PathJoiner.joinWithoutLeadingOrTrailingSlash;
-
+import static no.ssb.dlp.pseudo.core.util.PathJoiner.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class PathJoinerTest {
