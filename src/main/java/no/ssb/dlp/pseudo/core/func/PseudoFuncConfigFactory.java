@@ -23,6 +23,7 @@ import java.util.Map;
 
 import static no.ssb.dapla.dlp.pseudo.func.fpe.Alphabets.alphabetNameOf;
 import static no.ssb.dapla.dlp.pseudo.func.text.CharacterGroup.*;
+import static no.ssb.dlp.pseudo.core.func.PseudoFuncNames.*;
 
 @Slf4j
 class PseudoFuncConfigFactory {
@@ -31,13 +32,13 @@ class PseudoFuncConfigFactory {
 
     static {
         PSEUDO_CONFIG_PRESETS_MAP.putAll(Maps.uniqueIndex(List.of(
-          tinkDaeadPseudoFuncConfigPreset("daead"),
-          tinkFpePseudoFuncConfigPreset("ff31"),
-          sidMappingPseudoFuncConfigPreset("map-sid"),
-          redactPseudoFuncConfigPreset("redact"),
-          fpePseudoFuncConfigPreset("fpe-text", alphabetNameOf(ALPHANUMERIC, WHITESPACE, SYMBOLS)),
-          fpePseudoFuncConfigPreset("fpe-text_no", alphabetNameOf(ALPHANUMERIC_NO, WHITESPACE, SYMBOLS)),
-          fpePseudoFuncConfigPreset("fpe-fnr", alphabetNameOf(DIGITS))
+          tinkDaeadPseudoFuncConfigPreset(DAEAD),
+          tinkFpePseudoFuncConfigPreset(FF31),
+          sidMappingPseudoFuncConfigPreset(MAP_SID),
+          redactPseudoFuncConfigPreset(REDACT),
+          fpePseudoFuncConfigPreset(FPE + "-text", alphabetNameOf(ALPHANUMERIC, WHITESPACE, SYMBOLS)),
+          fpePseudoFuncConfigPreset(FPE + "-text_no", alphabetNameOf(ALPHANUMERIC_NO, WHITESPACE, SYMBOLS)),
+          fpePseudoFuncConfigPreset(FPE + "-fnr", alphabetNameOf(DIGITS))
 
         ), PseudoFuncConfigPreset::getFuncName));
     }
@@ -74,8 +75,8 @@ class PseudoFuncConfigFactory {
     }
 
     private static PseudoFuncConfigPreset fpePseudoFuncConfigPreset(String funcName, String alphabet) {
-        if (!funcName.startsWith("fpe-")) {
-            throw new IllegalArgumentException("FPE functions must be prefixed with 'fpe-'");
+        if (!funcName.startsWith(FPE)) {
+            throw new IllegalArgumentException("Legacy FPE functions must be prefixed with '" + FPE + "'");
         }
 
         return PseudoFuncConfigPreset.builder(funcName, FpeFunc.class)
@@ -98,8 +99,8 @@ class PseudoFuncConfigFactory {
         The alphabet to be used will be deduced from the function name (+ separated string with references to
         any already defined CharacterGroup, see no.ssb.dapla.dlp.pseudo.func.fpe.Alphabets)
          */
-        if (funcName.startsWith("fpe-")) {
-            String alphabetName = funcDecl.getFuncName().substring(4);
+        if (funcName.startsWith(FPE + "-")) {
+            String alphabetName = funcDecl.getFuncName().substring((FPE + "-").length());
             log.info("Add dynamic FPE function preset '{}' with alphabet '{}'. Allowed characters: {}",
               funcName, alphabetName, new String(Alphabets.fromAlphabetName(alphabetName).availableCharacters()));
             preset = fpePseudoFuncConfigPreset(funcName, alphabetName);
