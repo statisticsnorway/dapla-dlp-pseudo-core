@@ -3,7 +3,7 @@ package no.ssb.dlp.pseudo.core.typeconverter;
 import io.micronaut.core.convert.ConversionContext;
 import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.convert.TypeConverter;
-import no.ssb.dlp.pseudo.core.PseudoFuncRule;
+import no.ssb.dlp.pseudo.core.func.PseudoFuncRule;
 
 import java.util.Map;
 import java.util.Optional;

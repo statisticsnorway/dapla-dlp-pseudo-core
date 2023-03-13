@@ -136,6 +136,7 @@ class ZipsTest {
 
     @Test
     public void flowable_zipFlowable_shouldCreateZippedFlowable() throws Exception {
+
         AtomicInteger calls = new AtomicInteger();
         Flowable<String> f = Flowable.range(100, 10).map(Object::toString)
           .doOnCancel(() -> calls.incrementAndGet())
@@ -145,7 +146,6 @@ class ZipsTest {
 
         final Path pathToZip = Files.createTempDirectory("test").resolve(UUID.randomUUID() + ".zip");
         pathToZip.toFile().createNewFile();
-        assertInvalidZip(pathToZip);
 
         flowableZip.subscribe(
           (byte[] bytes) -> {

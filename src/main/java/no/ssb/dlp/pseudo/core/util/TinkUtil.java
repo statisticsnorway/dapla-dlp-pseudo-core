@@ -9,9 +9,9 @@ import java.io.IOException;
 @UtilityClass
 public class TinkUtil {
 
-    public static String newWrappedKeyJson(String kekUri) {
+    public static String newWrappedKeyJson(String kekUri, String keyTemplateName) {
         try {
-            KeysetHandle keysetHandle = KeysetHandle.generateNew(KeyTemplates.get("AES256_SIV"));
+            KeysetHandle keysetHandle = KeysetHandle.generateNew(KeyTemplates.get(keyTemplateName));
             return toWrappedKeyJson(keysetHandle, kekUri);
         }
         catch (Exception e) {

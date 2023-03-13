@@ -1,4 +1,4 @@
-package no.ssb.dlp.pseudo.core;
+package no.ssb.dlp.pseudo.core.func;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
