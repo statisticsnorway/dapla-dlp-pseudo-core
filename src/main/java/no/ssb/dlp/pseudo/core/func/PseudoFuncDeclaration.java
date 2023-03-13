@@ -15,7 +15,7 @@ public class PseudoFuncDeclaration {
     private final String funcName;
     private final Map<String, String> args;
 
-    private PseudoFuncDeclaration(String funcName, Map<String, String> args) {
+    public PseudoFuncDeclaration(String funcName, Map<String, String> args) {
         this.funcName = funcName;
         this.args = args;
     }
