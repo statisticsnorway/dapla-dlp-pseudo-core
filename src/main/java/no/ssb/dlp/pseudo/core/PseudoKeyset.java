@@ -4,8 +4,8 @@ import java.net.URI;
 import java.util.Set;
 
 public interface PseudoKeyset {
-    String getPrimaryKeyId();
-    Set<String> getKeyIds();
+    String primaryKeyId();
+    Set<String> keyIds();
 
     URI getKekUri();
 

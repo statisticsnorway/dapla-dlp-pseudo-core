@@ -43,7 +43,7 @@ public class PseudoFuncs {
           Collectors.toMap(PseudoSecret::getName, Function.identity()));
 
         Map<String, PseudoKeyset> pseudoKeysetMap = pseudoKeysets.stream().collect(
-                Collectors.toMap(PseudoKeyset::getPrimaryKeyId, Function.identity()));
+                Collectors.toMap(PseudoKeyset::primaryKeyId, Function.identity()));
 
         return pseudoRules.stream().collect(Collectors.toMap(
           Function.identity(),

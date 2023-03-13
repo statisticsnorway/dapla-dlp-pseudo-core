@@ -16,12 +16,12 @@ public class EncryptedKeysetWrapper implements PseudoKeyset {
     private KeysetInfo keysetInfo;
 
     @Override
-    public String getPrimaryKeyId() {
+    public String primaryKeyId() {
         return keysetInfo.getPrimaryKeyId().toString();
     }
 
     @Override
-    public Set<String> getKeyIds() {
+    public Set<String> keyIds() {
         return keysetInfo.getKeyInfo().stream()
                 .map(keyInfo -> keyInfo.getKeyId().toString())
                 .collect(Collectors.toSet());
