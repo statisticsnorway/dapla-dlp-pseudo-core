@@ -13,31 +13,31 @@
     <artifact-registry.url>artifactregistry://europe-north1-maven.pkg.dev/artifact-registry-14da</artifact-registry.url>
 
     <!-- Dependency versions -->
-    <avro-buddy-core.version>1.0.0</avro-buddy-core.version>
-    <dapla-dlp-pseudo-func.version>1.1.1-SNAPSHOT</dapla-dlp-pseudo-func.version>
-    <dapla-storage-client.version>5.0.0</dapla-storage-client.version>
+    <avro-buddy-core.version>1.1.0</avro-buddy-core.version>
+    <dapla-dlp-pseudo-func.version>1.2.0</dapla-dlp-pseudo-func.version>
+    <dapla-storage-client.version>5.1.2</dapla-storage-client.version>
     <guava.version>31.1-jre</guava.version>
     <jsonassert.version>1.5.1</jsonassert.version>
     <logback.version>1.4.5</logback.version>
-    <lombok.version>1.18.22</lombok.version>
+    <lombok.version>1.18.26</lombok.version>
     <micronaut.version>3.8.0</micronaut.version>
-    <rxjava-extras.version>0.2.1.1</rxjava-extras.version>
+    <rxjava-extras.version>0.2.2</rxjava-extras.version>
     <tika.version>1.24.1</tika.version>
     <tink.version>1.7.0</tink.version>
     <univocity-parsers.version>2.9.1</univocity-parsers.version>
-    <zip4j.version>2.11.2</zip4j.version>
+    <zip4j.version>2.11.5</zip4j.version>
 
     <!-- Plugin/extension versions -->
     <artifactregistry-maven-wagon.version>2.1.4</artifactregistry-maven-wagon.version>
-    <checkstyle.version>9.3</checkstyle.version>
-    <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
+    <checkstyle.version>10.8.1</checkstyle.version>
+    <maven-checkstyle-plugin.version>3.2.1</maven-checkstyle-plugin.version>
     <maven-compiler-plugin.version>3.10.0</maven-compiler-plugin.version>
     <maven-failsafe-plugin.version>3.0.0-M5</maven-failsafe-plugin.version>
     <maven-javadoc-plugin.version>3.3.0</maven-javadoc-plugin.version>
     <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
     <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
     <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
-    <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
+    <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
     <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
   </properties>
 

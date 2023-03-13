@@ -23,10 +23,10 @@ public class DaeadFuncTest {
         DeterministicAeadConfig.register();
     }
 
-    private final static String KEYSET_JSON_AES256_SIV = "{\"primaryKeyId\":9876543210,\"key\":[{\"keyData\":{\"typeUrl\":\"type.googleapis.com/google.crypto.tink.AesSivKey\",\"value\":\"EkCIjYUrKTTMAxEZST8xoyBXrfSLtTt+XmfBcE/PQxhr1Ob+YdD84bSMPQDaTGMqD241C4J7oQ+w3RFXaC8vKzbI\",\"keyMaterialType\":\"SYMMETRIC\"},\"status\":\"ENABLED\",\"keyId\":9876543210,\"outputPrefixType\":\"TINK\"}]}\n";
+    private final static String KEYSET_JSON_AES256_SIV = "{\"primaryKeyId\":1284924461,\"key\":[{\"keyData\":{\"typeUrl\":\"type.googleapis.com/google.crypto.tink.AesSivKey\",\"value\":\"EkCIjYUrKTTMAxEZST8xoyBXrfSLtTt+XmfBcE/PQxhr1Ob+YdD84bSMPQDaTGMqD241C4J7oQ+w3RFXaC8vKzbI\",\"keyMaterialType\":\"SYMMETRIC\"},\"status\":\"ENABLED\",\"keyId\":1284924461,\"outputPrefixType\":\"TINK\"}]}";
 
     private final static Map<String, String> KEYSETS = Map.of(
-            "9876543210", KEYSET_JSON_AES256_SIV
+            "1284924461", KEYSET_JSON_AES256_SIV
     );
 
     private DeterministicAead daeadPrimitive(String keyId) throws Exception {
@@ -56,8 +56,8 @@ public class DaeadFuncTest {
 
     @Test
     void givenText_daead_shouldEncryptAndDecrypt() throws Exception {
-        String funcDeclStr = "daead(keyId=9876543210)";
-        transformAndRestore("Something", "AUywFurOtYjeblGN+jZeR4w6alLoxuSsaigbZ+am", f(funcDeclStr));
+        String funcDeclStr = "daead(keyId=1284924461)";
+        transformAndRestore("Something", "AUyWZC3OtYjeblGN+jZeR4w6alLoxuSsaigbZ+am", f(funcDeclStr));
     }
 
 }
