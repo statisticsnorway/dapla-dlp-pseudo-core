@@ -1,21 +1,23 @@
 package no.ssb.dlp.pseudo.core.func;
 
+import no.ssb.dapla.dlp.pseudo.func.fpe.FpeFuncConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class PseudoFuncDeclarationTest {
 
     @Test
     void parseFuncDeclStringWithArgs() {
-        String funcDecl = "ffx31(key=123, strategy=skip)";
+        String funcDecl = "ffx31(keyId=123, strategy=skip)";
         PseudoFuncDeclaration decl = PseudoFuncDeclaration.fromString(funcDecl);
         assertThat(decl.getFuncName()).isEqualTo("ffx31");
         assertThat(decl.getArgs().size()).isEqualTo(2);
-        assertThat(decl.getArgs().get("key")).isEqualTo("123");
+        assertThat(decl.getArgs().get("keyId")).isEqualTo("123");
         assertThat(decl.getArgs().get("strategy")).isEqualTo("skip");
     }
 
@@ -45,12 +47,27 @@ public class PseudoFuncDeclarationTest {
         assertThat(decl.getArgs().size()).isEqualTo(0);
     }
 
+    @Test
+    void parseFuncDeclStringWithImplicitKeyIdForFpeFunctions() {
+        String funcDecl = "fpe-anychar(123)";
+        PseudoFuncDeclaration decl = PseudoFuncDeclaration.fromString(funcDecl);
+        assertThat(decl.getFuncName()).isEqualTo("fpe-anychar");
+        assertThat(decl.getArgs()).isNotNull();
+        assertThat(decl.getArgs().get(FpeFuncConfig.Param.KEY_ID)).isEqualTo("123");
+
+        assertThatThrownBy(() -> {
+            PseudoFuncDeclaration.fromString("foo-anychar(123)");
+        })
+                .isInstanceOf(PseudoFuncDeclaration.InvalidPseudoFuncParam.class)
+                .hasMessageContaining("Pseudo func param should be on the format 'key=value', but was '123'. Func declaration:foo-anychar(123)");
+    }
+
     @ParameterizedTest
     @CsvSource(delimiter = ';', value = {
             "foo;foo()",
             "foo();foo()",
-            "foo(key=123);foo(key=123)",
-            "foo(    key   =  123  );foo(key=123)",
+            "foo(keyId=123);foo(keyId=123)",
+            "foo(    keyId   =  123  );foo(keyId=123)",
             "foo(    some thing =   my value );foo(some thing=my value)",
             "foo(bar = baz=123);foo(bar=baz=123)",
     })

@@ -5,8 +5,6 @@ import no.ssb.dlp.pseudo.core.PseudoException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 // TODO: Support values wrapped by quotes (for values that need to use special characters like commas or parentheses)
@@ -20,8 +18,8 @@ public class PseudoFuncDeclaration {
         this.args = args;
     }
 
-    public static PseudoFuncDeclaration fromString(String s) {
-        s = s.replaceAll("[()]", " ").trim();
+    public static PseudoFuncDeclaration fromString(final String funcDeclStr) {
+        String s = funcDeclStr.replaceAll("[()]", " ").trim();
         if (s.indexOf(' ') == -1) {
             return new PseudoFuncDeclaration(s, Map.of());
         } else {
@@ -31,10 +29,19 @@ public class PseudoFuncDeclaration {
             Map<String, String> args = Arrays.stream(argsString.split(","))
                     .map(kv -> {
                         String[] items = kv.split("=", 2);
-                        if (items.length != 2) {
-                            throw new InvalidPseudoFuncParam("Pseudo func param should be on the format 'key=value', but was " + kv);
+                        if (items.length == 2) {
+                            return items;
                         }
-                        return items;
+                        else {
+                            // For backwards compatibility with fpe:
+                            // If param name is not specified (which used to be okay earlier, then we maintain backwards
+                            // compatibility by assuming the param name to be 'keyId'.
+                            // This should be removed if/when we no longer support the fpe- function family.
+                            if (funcName.startsWith(PseudoFuncNames.FPE)) {
+                                return new String[] {"keyId", kv.trim()}; // For backwards compatibility. Should be removed if we phase out fpe- functions
+                            }
+                            throw new InvalidPseudoFuncParam("Pseudo func param should be on the format 'key=value', but was '" + kv.trim() + "'. Func declaration:" + funcDeclStr);
+                        }
                     })
                     .collect(Collectors.toMap(
                             kv -> kv[0].trim(),
