@@ -27,15 +27,16 @@ public class PseudoFuncDeclaration {
             String argsString = s.substring(funcName.length(), s.length());
 
             Map<String, String> args = Arrays.stream(argsString.split(","))
-                    // Determine param name and value. If param name is not specified (which used to be okay earlier,
-                    // then we maintain backwards compatibility by assuming the param name to be 'keyId'.
-                    // This should be removed if/when we no longer support the fpe- function family.
                     .map(kv -> {
                         String[] items = kv.split("=", 2);
                         if (items.length == 2) {
                             return items;
                         }
                         else {
+                            // For backwards compatibility with fpe:
+                            // If param name is not specified (which used to be okay earlier, then we maintain backwards
+                            // compatibility by assuming the param name to be 'keyId'.
+                            // This should be removed if/when we no longer support the fpe- function family.
                             if (funcName.startsWith(PseudoFuncNames.FPE)) {
                                 return new String[] {"keyId", kv.trim()}; // For backwards compatibility. Should be removed if we phase out fpe- functions
                             }
