@@ -24,7 +24,7 @@ public class Ff31FuncTest {
         FpeConfig.register();
     }
 
-    private final static String KEYSET_JSON_FF31_256_ALPHANUMERIC = "{\"primaryKeyId\":1234567890,\"key\":[{\"keyData\":{\"typeUrl\":\"type.googleapis.com/ssb.crypto.tink.FpeFfxKey\",\"value\":\"EiBoBeUFkoew7YJObcgcz1uOmzdhJFkPP7driAxAuS0UiRpCEAIaPkFCQ0RFRkdISUpLTE1OT1BRUlNUVVZXWFlaYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXowMTIzNDU2Nzg5\",\"keyMaterialType\":\"SYMMETRIC\"},\"status\":\"ENABLED\",\"keyId\":1234567890,\"outputPrefixType\":\"RAW\"}]}";
+    private final static String KEYSET_JSON_FF31_256_ALPHANUMERIC = "{\"primaryKeyId\":832997605,\"key\":[{\"keyData\":{\"typeUrl\":\"type.googleapis.com/ssb.crypto.tink.FpeFfxKey\",\"value\":\"EiCCNkK81HHmUY4IjEzXDrGLOT5t+7PGQ1eIyrGqGa4S3BpCEAIaPjAxMjM0NTY3ODlBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWmFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6\",\"keyMaterialType\":\"SYMMETRIC\"},\"status\":\"ENABLED\",\"keyId\":832997605,\"outputPrefixType\":\"RAW\"}]}";
 
     private final static Map<String, String> KEYSETS = Map.of(
             "1234567890", KEYSET_JSON_FF31_256_ALPHANUMERIC
@@ -58,7 +58,7 @@ public class Ff31FuncTest {
     @Test
     void givenText_ff31_shouldEncryptAndDecrypt() throws Exception {
         String funcDeclStr = "ff31(keyId=1234567890)";
-        transformAndRestore("Something", "oADYiZKI3", f(funcDeclStr));
+        transformAndRestore("Something", "gHFaQBh7g", f(funcDeclStr));
     }
     @Test
     void givenText_ff31Fail_shouldFailForNonSupportedCharacters() throws Exception {
@@ -73,7 +73,7 @@ public class Ff31FuncTest {
     @Test
     void givenText_ff31Skip_shouldEncryptAndDecrypt() throws Exception {
         String funcDeclStr = "ff31(keyId=1234567890, strategy=SKiP)";
-        transformAndRestore("Ken sent me...", "fCR kd95 VR...", f(funcDeclStr));
+        transformAndRestore("Ken sent me...", "6Dy NHKv ig...", f(funcDeclStr));
     }
 
     @Test
@@ -82,9 +82,9 @@ public class Ff31FuncTest {
         PseudoFunc func = f(funcDeclStr);
 
         PseudoFuncOutput pseudonymized = func.apply(PseudoFuncInput.of("Ken sent me..."));
-        assertThat(pseudonymized.getFirstValue()).isEqualTo("fCRkd95VR");
+        assertThat(pseudonymized.getFirstValue()).isEqualTo("6DyNHKvig");
 
-        PseudoFuncOutput depseudonymized = func.restore(PseudoFuncInput.of("fCRkd95VR"));
+        PseudoFuncOutput depseudonymized = func.restore(PseudoFuncInput.of("6DyNHKvig"));
         assertThat(depseudonymized.getFirstValue()).isEqualTo("Kensentme");
     }
 
@@ -94,9 +94,9 @@ public class Ff31FuncTest {
         PseudoFunc func = f(funcDeclStr);
 
         PseudoFuncOutput pseudonymized = func.apply(PseudoFuncInput.of("Ken sent me..."));
-        assertThat(pseudonymized.getFirstValue()).isEqualTo("KGoDjzQOx4MasT");
+        assertThat(pseudonymized.getFirstValue()).isEqualTo("3WD8UlZRDER1z5");
 
-        PseudoFuncOutput depseudonymized = func.restore(PseudoFuncInput.of("KGoDjzQOx4MasT"));
+        PseudoFuncOutput depseudonymized = func.restore(PseudoFuncInput.of("3WD8UlZRDER1z5"));
         assertThat(depseudonymized.getFirstValue()).isEqualTo("KenZsentZmeZZZ");
     }
 
