@@ -37,6 +37,14 @@ public class FieldPseudonymizer {
         return pseudoFuncs.findPseudoFunc(field);
     }
 
+    public String init(FieldDescriptor field, String varValue) {
+        Optional<PseudoFuncRuleMatch> match = pseudoFuncs.findPseudoFunc(field);
+        if (match.isPresent()) {
+            match.get().getFunc().init(PseudoFuncInput.of(varValue));
+        }
+        return varValue;
+    }
+
     private String process(PseudoOperation operation, FieldDescriptor field, String varValue) {
 
         // TODO: This check is function type specific (e.g. only applies for FPE?)
