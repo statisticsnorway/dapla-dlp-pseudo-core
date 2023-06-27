@@ -12,12 +12,12 @@ import java.util.*;
  * Example: 1) Perform pseudonymization and 2) log schema metrics
  */
 public class ValueInterceptorChain implements ValueInterceptor {
-    private final List<ValueInterceptor> preprocessors = new ArrayList<>();
+    private final List<ValueInterceptor> initChain = new ArrayList<>();
     private final List<ValueInterceptor> chain = new ArrayList<>();
     private final Map<String, Serializable> context = new HashMap<>();
 
     public ValueInterceptorChain preprocessor(ValueInterceptor valueInterceptor) {
-        preprocessors.add(valueInterceptor);
+        initChain.add(valueInterceptor);
         return this;
     }
 
@@ -33,14 +33,14 @@ public class ValueInterceptorChain implements ValueInterceptor {
     }
 
     public String init(FieldDescriptor field, String value) {
-        for (ValueInterceptor vi : preprocessors) {
+        for (ValueInterceptor vi : initChain) {
             value = vi.apply(field, value);
         }
         return value;
     }
 
     public boolean hasPreprocessors() {
-        return !preprocessors.isEmpty();
+        return !initChain.isEmpty();
     }
 
     @Override
