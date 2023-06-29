@@ -3,6 +3,7 @@ package no.ssb.dlp.pseudo.core.csv;
 import com.univocity.parsers.common.record.Record;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
+import io.reactivex.Completable;
 import io.reactivex.Emitter;
 import io.reactivex.Flowable;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +13,6 @@ import no.ssb.dlp.pseudo.core.StreamProcessor;
 import no.ssb.dlp.pseudo.core.map.RecordMapProcessor;
 import no.ssb.dlp.pseudo.core.map.RecordMapSerializer;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -25,8 +25,12 @@ public class CsvStreamProcessor implements StreamProcessor {
     private final RecordMapProcessor recordMapProcessor;
 
     @Override
-    public <T> Flowable<T> init(InputStream is, RecordMapSerializer<T> serializer) {
-        return processStream(is, serializer, (map) -> recordMapProcessor.init(map));
+    public <T> Completable init(InputStream is, RecordMapSerializer<T> serializer) {
+        if (recordMapProcessor.hasPreprocessors()) {
+            return Completable.fromPublisher(processStream(is, serializer, (map) -> recordMapProcessor.init(map)));
+        } else {
+            return Completable.complete();
+        }
     }
 
     @Override
