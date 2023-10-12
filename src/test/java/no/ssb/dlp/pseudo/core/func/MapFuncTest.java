@@ -24,14 +24,14 @@ public class MapFuncTest {
         final Mapper mockMapper = mock(Mapper.class);
         try (var mapFunc = mockStatic(MapFunc.class)) {
             mapFunc.when(() -> MapFunc.loadMapper()).thenReturn(mockMapper);
-            String funcDeclStr = "map-sid(keyId=1284924461, versionTimestamp=test)";
+            String funcDeclStr = "map-sid(keyId=1284924461, snapshotDate=2023-05-21)";
             PseudoFunc func = f(funcDeclStr);
             func.init(PseudoFuncInput.of("50607080901"));
         }
         // Check that the mockMapper has received the versionTimestamp
         ArgumentCaptor<Map> argumentsCaptured = ArgumentCaptor.forClass(Map.class);
         verify(mockMapper).setConfig(argumentsCaptured.capture());
-        assert argumentsCaptured.getValue().containsKey("versionTimestamp");
+        assert argumentsCaptured.getValue().containsKey("snapshotDate");
         // Check that the init method was called
         verify(mockMapper).init(eq("50607080901"));
     }

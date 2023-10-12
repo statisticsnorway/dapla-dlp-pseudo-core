@@ -49,7 +49,7 @@ class PseudoFuncConfigFactory {
         return PseudoFuncConfigPreset.builder(funcName, MapFunc.class)
                 .staticParam(MapFuncConfig.Param.CONTEXT, "sid")
                 .requiredParam(String.class, TinkFpeFuncConfig.Param.KEY_ID)
-                .optionalParam(String.class, MapFuncConfig.Param.VERSION_TIMESTAMP)
+                .optionalParam(String.class, MapFuncConfig.Param.SNAPSHOT_DATE)
                 .build();
     }
 
