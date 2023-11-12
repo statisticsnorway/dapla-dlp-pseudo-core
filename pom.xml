@@ -14,9 +14,7 @@
     <github.repository>statisticsnorway/dapla-dlp-pseudo-core</github.repository>
 
     <!-- Dependency versions -->
-    <avro-buddy-core.version>1.1.0</avro-buddy-core.version>
     <dapla-dlp-pseudo-func.version>1.2.8</dapla-dlp-pseudo-func.version>
-    <dapla-storage-client.version>5.1.2</dapla-storage-client.version>
     <guava.version>32.0.0-jre</guava.version>
     <jsonassert.version>1.5.1</jsonassert.version>
     <logback.version>1.4.5</logback.version>
@@ -116,16 +114,6 @@
       <groupId>no.ssb.dapla.dlp.pseudo.func</groupId>
       <artifactId>dapla-dlp-pseudo-func</artifactId>
       <version>${dapla-dlp-pseudo-func.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>no.ssb.avro.convert.core</groupId>
-      <artifactId>avro-buddy-core</artifactId>
-      <version>${avro-buddy-core.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>no.ssb.dapla.storage</groupId>
-      <artifactId>dapla-storage-client</artifactId>
-      <version>${dapla-storage-client.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.crypto.tink</groupId>
