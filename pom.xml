@@ -15,7 +15,7 @@
 
     <!-- Dependency versions -->
     <avro-buddy-core.version>1.1.0</avro-buddy-core.version>
-    <dapla-dlp-pseudo-func.version>1.2.7</dapla-dlp-pseudo-func.version>
+    <dapla-dlp-pseudo-func.version>1.2.8</dapla-dlp-pseudo-func.version>
     <dapla-storage-client.version>5.1.2</dapla-storage-client.version>
     <guava.version>32.0.0-jre</guava.version>
     <jsonassert.version>1.5.1</jsonassert.version>
