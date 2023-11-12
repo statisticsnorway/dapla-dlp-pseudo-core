@@ -50,6 +50,30 @@
 
   <repositories>
     <repository>
+      <id>artifact-registry</id>
+      <url>${artifact-registry.url}</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>artifact-registry-snapshot</id>
+      <url>${artifact-registry.url}</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>central</id>
+      <url>https://repo.maven.apache.org/maven2</url>
+    </repository>
+    <repository>
       <id>jcenter.bintray.com</id>
       <url>https://jcenter.bintray.com</url>
     </repository>
@@ -368,28 +392,6 @@
     </profile>
     <profile>
       <id>ssb-bip</id>
-      <repositories>
-        <repository>
-          <id>artifact-registry</id>
-          <url>${artifact-registry.url}/maven-releases</url>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-        </repository>
-        <repository>
-          <id>artifact-registry-snapshots</id>
-          <url>${artifact-registry.url}/maven-snapshots</url>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-        </repository>
-      </repositories>
       <distributionManagement>
         <repository>
           <id>artifact-registry</id>
