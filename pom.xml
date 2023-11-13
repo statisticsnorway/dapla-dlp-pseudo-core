@@ -38,6 +38,7 @@
     <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
     <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
     <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
+    <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
   </properties>
 
   <scm>
