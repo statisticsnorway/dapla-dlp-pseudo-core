@@ -49,32 +49,23 @@
 
   <repositories>
     <repository>
-      <id>artifact-registry</id>
-      <url>${artifact-registry.url}</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>artifact-registry-snapshot</id>
-      <url>${artifact-registry.url}</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
       <id>central</id>
       <url>https://repo.maven.apache.org/maven2</url>
     </repository>
     <repository>
       <id>jcenter.bintray.com</id>
       <url>https://jcenter.bintray.com</url>
+    </repository>
+    <repository>
+      <id>artifact-registry</id>
+      <url>${artifact-registry.url}</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
     </repository>
   </repositories>
 
