@@ -3,6 +3,7 @@ package no.ssb.dlp.pseudo.core.csv;
 import com.univocity.parsers.common.record.Record;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
+import io.reactivex.Completable;
 import io.reactivex.Emitter;
 import io.reactivex.Flowable;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +13,6 @@ import no.ssb.dlp.pseudo.core.StreamProcessor;
 import no.ssb.dlp.pseudo.core.map.RecordMapProcessor;
 import no.ssb.dlp.pseudo.core.map.RecordMapSerializer;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -25,11 +25,20 @@ public class CsvStreamProcessor implements StreamProcessor {
     private final RecordMapProcessor recordMapProcessor;
 
     @Override
-    public <T> Flowable<T> process(InputStream is, RecordMapSerializer<T> serializer) {
-        return processStream(is, serializer);
+    public <T> Completable init(InputStream is, RecordMapSerializer<T> serializer) {
+        if (recordMapProcessor.hasPreprocessors()) {
+            return Completable.fromPublisher(processStream(is, serializer, (map) -> recordMapProcessor.init(map)));
+        } else {
+            return Completable.complete();
+        }
     }
 
-    <T> CsvProcessorContext<T> initCsvProcessorContext(InputStream is, RecordMapSerializer<T> serializer) throws IOException {
+    @Override
+    public <T> Flowable<T> process(InputStream is, RecordMapSerializer<T> serializer) {
+        return processStream(is, serializer, (map) -> recordMapProcessor.process(map));
+    }
+
+    <T> CsvProcessorContext<T> initCsvProcessorContext(InputStream is, RecordMapSerializer<T> serializer) {
         CsvParserSettings settings = new CsvParserSettings();
         settings.detectFormatAutomatically();
         settings.setHeaderExtractionEnabled(true);
@@ -38,19 +47,19 @@ public class CsvStreamProcessor implements StreamProcessor {
         return new CsvProcessorContext<>(csvParser, serializer);
     }
 
-    private <T> Flowable<T> processStream(InputStream is, RecordMapSerializer<T> serializer) {
+    private <T> Flowable<T> processStream(InputStream is, RecordMapSerializer<T> serializer, ItemProcessor processor) {
         return Flowable.generate(
                 () -> initCsvProcessorContext(is, serializer),
-                (ctx, emitter) -> {this.processItem(ctx, emitter);}
+                (ctx, emitter) -> {this.processItem(ctx, emitter, processor);}
         );
     }
 
-    private <T> void processItem(CsvProcessorContext<T> ctx, Emitter<T> emitter)  {
+    private <T> void processItem(CsvProcessorContext<T> ctx, Emitter<T> emitter, ItemProcessor processor)  {
         Record r = ctx.csvParser.parseNextRecord();
         if (r != null) {
             int position = ctx.currentPosition.getAndIncrement();
             Map<String, Object> recordMap = r.fillFieldObjectMap(new LinkedHashMap<>());
-            Map<String, Object> processedRecord = recordMapProcessor.process(recordMap);
+            Map<String, Object> processedRecord = processor.process(recordMap);
             emitter.onNext(ctx.getSerializer().serialize(processedRecord, position));
         }
         else {

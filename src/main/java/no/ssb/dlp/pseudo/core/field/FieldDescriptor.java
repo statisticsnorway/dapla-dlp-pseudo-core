@@ -1,7 +1,5 @@
 package no.ssb.dlp.pseudo.core.field;
 
-import no.ssb.avro.convert.core.DataElement;
-
 import java.nio.file.FileSystems;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -16,8 +14,8 @@ public class FieldDescriptor {
         this.name = this.path.substring(this.path.lastIndexOf('/') + 1);
     }
 
-    public static FieldDescriptor from(DataElement dataElement) {
-        return new FieldDescriptor(dataElement.getPath());
+    public static FieldDescriptor from(String path) {
+        return new FieldDescriptor(path);
     }
 
     /**

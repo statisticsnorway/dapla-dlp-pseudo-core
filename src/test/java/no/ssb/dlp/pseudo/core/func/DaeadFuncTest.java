@@ -58,6 +58,7 @@ public class DaeadFuncTest {
     void givenText_daead_shouldEncryptAndDecrypt() throws Exception {
         String funcDeclStr = "daead(keyId=1284924461)";
         transformAndRestore("Something", "AUyWZC3OtYjeblGN+jZeR4w6alLoxuSsaigbZ+am", f(funcDeclStr));
+        transformAndRestore("Ken sent me...", "AUyWZC0ywbNOjzEZZZcMRHK+7P0ZYsgotQ9hZdbxsw/A2PM=", f(funcDeclStr));
     }
 
 }

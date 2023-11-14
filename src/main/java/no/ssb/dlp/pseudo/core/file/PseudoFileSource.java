@@ -27,7 +27,6 @@ import java.util.function.Function;
 public class PseudoFileSource {
     private final MediaType providedMediaType;
     private final MediaType mediaType;
-    private final InputStream inputStream;
     private final Set<File> allFiles;
     private final Collection<File> sourceFiles;
 
@@ -45,7 +44,6 @@ public class PseudoFileSource {
             if (sourceFiles.isEmpty()) {
                 throw new PseudoException("No files of type " + mediaType + " found");
             }
-            inputStream = inputStreamOf(sourceFiles);
         }
         catch (IOException e) {
             throw new PseudoException("Error initializing PseudoFileStream from file " + file, e);
@@ -75,7 +73,8 @@ public class PseudoFileSource {
      * @return a (possibly concatenated) input stream for the provided the files
      */
     public InputStream getInputStream() {
-        return inputStream;
+        // Do this every time since the input stream cannot be re-used
+        return inputStreamOf(sourceFiles);
     }
 
     /**
