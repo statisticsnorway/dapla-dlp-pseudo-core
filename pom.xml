@@ -17,7 +17,6 @@
     <dapla-dlp-pseudo-func.version>1.2.8</dapla-dlp-pseudo-func.version>
     <guava.version>32.0.0-jre</guava.version>
     <jsonassert.version>1.5.1</jsonassert.version>
-    <lombok.version>1.18.26</lombok.version>
     <logback.version>1.4.6</logback.version>
     <lombok.version>1.18.30</lombok.version>
     <micronaut.version>3.8.7</micronaut.version>
