@@ -3,7 +3,7 @@ default: | help
 
 .PHONY: build
 build: ## Build project and install to you local maven repo
-	mvn clean install
+	./mvnw clean install
 
 .PHONY: release-dryrun
 release-dryrun: ## Simulate a release in order to detect any issues
