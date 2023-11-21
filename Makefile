@@ -1,8 +1,8 @@
 .PHONY: default
 default: | help
 
-.PHONY: build
-build: ## Build project and install to you local maven repo
+.PHONY: build-mvn
+build-mvn: ## Build project and install to you local maven repo
 	./mvnw clean install
 
 .PHONY: release-dryrun
