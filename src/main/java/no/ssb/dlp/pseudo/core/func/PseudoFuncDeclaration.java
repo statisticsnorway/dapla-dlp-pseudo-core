@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 // TODO: Support values wrapped by quotes (for values that need to use special characters like commas or parentheses)
 
 public class PseudoFuncDeclaration {
+    public static final String KEY_REFERENCE  = "keyId";
     private final String funcName;
     private final Map<String, String> args;
 
@@ -38,7 +39,7 @@ public class PseudoFuncDeclaration {
                             // compatibility by assuming the param name to be 'keyId'.
                             // This should be removed if/when we no longer support the fpe- function family.
                             if (funcName.startsWith(PseudoFuncNames.FPE)) {
-                                return new String[] {"keyId", kv.trim()}; // For backwards compatibility. Should be removed if we phase out fpe- functions
+                                return new String[] {KEY_REFERENCE, kv.trim()}; // For backwards compatibility. Should be removed if we phase out fpe- functions
                             }
                             throw new InvalidPseudoFuncParam("Pseudo func param should be on the format 'key=value', but was '" + kv.trim() + "'. Func declaration:" + funcDeclStr);
                         }
