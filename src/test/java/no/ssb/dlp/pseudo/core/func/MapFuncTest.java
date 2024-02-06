@@ -33,6 +33,6 @@ public class MapFuncTest {
         verify(mockMapper).setConfig(argumentsCaptured.capture());
         assert argumentsCaptured.getValue().containsKey("snapshotDate");
         // Check that the init method was called
-        verify(mockMapper).init(eq("50607080901"));
+        verify(mockMapper).init(eq(PseudoFuncInput.of("50607080901")));
     }
 }

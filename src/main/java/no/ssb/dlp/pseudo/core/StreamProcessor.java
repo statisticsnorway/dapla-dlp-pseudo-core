@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.util.Map;
 
 public interface StreamProcessor {
-    <T> Completable init(InputStream is, RecordMapSerializer<T> serializer);
+    <T> Completable init(InputStream is);
     <T> Flowable<T> process(InputStream is, RecordMapSerializer<T> serializer);
     @FunctionalInterface
     public interface ItemProcessor {

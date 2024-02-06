@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.ssb.dlp.pseudo.core.StreamProcessor;
 import no.ssb.dlp.pseudo.core.map.RecordMapProcessor;
 import no.ssb.dlp.pseudo.core.map.RecordMapSerializer;
+import no.ssb.dlp.pseudo.core.map.RecordMapSerializerFactory;
 
 import java.io.InputStream;
 import java.util.LinkedHashMap;
@@ -22,12 +23,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class CsvStreamProcessor implements StreamProcessor {
 
-    private final RecordMapProcessor recordMapProcessor;
+    private final RecordMapProcessor<String> recordMapProcessor;
 
     @Override
-    public <T> Completable init(InputStream is, RecordMapSerializer<T> serializer) {
+    public <T> Completable init(InputStream is) {
         if (recordMapProcessor.hasPreprocessors()) {
-            return Completable.fromPublisher(processStream(is, serializer, (map) -> recordMapProcessor.init(map)));
+            return Completable.fromPublisher(processStream(is, RecordMapSerializerFactory.emptySerializer(), recordMapProcessor::init));
         } else {
             return Completable.complete();
         }
@@ -35,7 +36,7 @@ public class CsvStreamProcessor implements StreamProcessor {
 
     @Override
     public <T> Flowable<T> process(InputStream is, RecordMapSerializer<T> serializer) {
-        return processStream(is, serializer, (map) -> recordMapProcessor.process(map));
+        return processStream(is, serializer, recordMapProcessor::process);
     }
 
     <T> CsvProcessorContext<T> initCsvProcessorContext(InputStream is, RecordMapSerializer<T> serializer) {

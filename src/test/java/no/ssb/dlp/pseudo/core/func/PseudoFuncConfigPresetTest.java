@@ -23,6 +23,11 @@ class PseudoFuncConfigPresetTest {
         }
 
         @Override
+        public String getAlgorithm() {
+            return null;
+        }
+
+        @Override
         public PseudoFuncOutput apply(PseudoFuncInput input) {
             return new PseudoFuncOutput();
         }
