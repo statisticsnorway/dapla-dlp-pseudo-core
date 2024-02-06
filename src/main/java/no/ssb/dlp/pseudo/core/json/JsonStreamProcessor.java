@@ -15,6 +15,7 @@ import no.ssb.dlp.pseudo.core.StreamProcessor;
 import no.ssb.dlp.pseudo.core.map.RecordMap;
 import no.ssb.dlp.pseudo.core.map.RecordMapProcessor;
 import no.ssb.dlp.pseudo.core.map.RecordMapSerializer;
+import no.ssb.dlp.pseudo.core.map.RecordMapSerializerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,9 +37,9 @@ public class JsonStreamProcessor implements StreamProcessor {
     private final RecordMapProcessor recordMapProcessor;
 
     @Override
-    public <T> Completable init(InputStream is, RecordMapSerializer<T> serializer) {
+    public <T> Completable init(InputStream is) {
         if (recordMapProcessor.hasPreprocessors()) {
-            return Completable.fromPublisher(processStream(is, serializer, (map) -> recordMapProcessor.init(map)));
+            return Completable.fromPublisher(processStream(is, RecordMapSerializerFactory.emptySerializer(), recordMapProcessor::init));
         } else {
             return Completable.complete();
         }

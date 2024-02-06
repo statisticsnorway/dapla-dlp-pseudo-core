@@ -17,6 +17,7 @@ import java.util.Optional;
 import static no.ssb.dlp.pseudo.core.PseudoOperation.DEPSEUDONYMIZE;
 import static no.ssb.dlp.pseudo.core.PseudoOperation.PSEUDONYMIZE;
 
+@Deprecated(forRemoval = true) // Should use PseudoFuncs instead
 public class FieldPseudonymizer {
 
     private final PseudoFuncs pseudoFuncs;
@@ -25,11 +26,11 @@ public class FieldPseudonymizer {
         this.pseudoFuncs = pseudoFuncs;
     }
 
-    public String pseudonymize(FieldDescriptor field, String varValue) {
+    public PseudoFuncOutput pseudonymize(FieldDescriptor field, String varValue) {
         return process(PSEUDONYMIZE, field, varValue);
     }
 
-    public String depseudonymize(FieldDescriptor field, String varValue) {
+    public PseudoFuncOutput depseudonymize(FieldDescriptor field, String varValue) {
         return process(DEPSEUDONYMIZE, field, varValue);
     }
 
@@ -37,31 +38,29 @@ public class FieldPseudonymizer {
         return pseudoFuncs.findPseudoFunc(field);
     }
 
-    public String init(FieldDescriptor field, String varValue) {
+    public void init(FieldDescriptor field, String varValue) {
         Optional<PseudoFuncRuleMatch> match = pseudoFuncs.findPseudoFunc(field);
         if (match.isPresent()) {
             match.get().getFunc().init(PseudoFuncInput.of(varValue));
         }
-        return varValue;
     }
 
-    private String process(PseudoOperation operation, FieldDescriptor field, String varValue) {
+    private PseudoFuncOutput process(PseudoOperation operation, FieldDescriptor field, String varValue) {
 
         // TODO: This check is function type specific (e.g. only applies for FPE?)
         if (varValue == null || varValue.length() <= 2) {
-            return varValue;
+            return PseudoFuncOutput.of(varValue);
         }
 
         PseudoFuncRuleMatch match = pseudoFuncs.findPseudoFunc(field).orElse(null);
         try {
             if (match == null) {
-                return varValue;
+                return PseudoFuncOutput.of(varValue);
             }
 
-            PseudoFuncOutput res = (operation == PSEUDONYMIZE)
+            return (operation == PSEUDONYMIZE)
               ? match.getFunc().apply(PseudoFuncInput.of(varValue))
               : match.getFunc().restore(PseudoFuncInput.of(varValue));
-            return (String) res.getFirstValue();
         }
         catch (Exception e) {
             throw new PseudoException(operation + " error - field='" + field.getPath() + "', originalValue='" + varValue  + "'", e);
