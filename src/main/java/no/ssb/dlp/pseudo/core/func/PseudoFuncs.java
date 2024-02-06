@@ -33,16 +33,15 @@ public class PseudoFuncs {
 
     //TODO: Validate that all required secrets are available
     public PseudoFuncs(Collection<PseudoFuncRule> rules, Collection<PseudoSecret> pseudoSecrets,
-                       Collection<PseudoKeyset> keysets, String correlationId) {
-        Map<PseudoFuncRule, PseudoFuncConfig> ruleToPseudoFuncConfigs = initPseudoFuncConfigs(rules, pseudoSecrets, keysets, correlationId);
+                       Collection<PseudoKeyset> keysets) {
+        Map<PseudoFuncRule, PseudoFuncConfig> ruleToPseudoFuncConfigs = initPseudoFuncConfigs(rules, pseudoSecrets, keysets);
         rules.forEach(rule -> ruleToFuncMap.put(rule, PseudoFuncFactory.create(ruleToPseudoFuncConfigs.get(rule))));
     }
 
     // TODO: Move these init functions elsewhere?
     static Map<PseudoFuncRule, PseudoFuncConfig> initPseudoFuncConfigs(Collection<PseudoFuncRule> pseudoRules,
                                                                        Collection<PseudoSecret> pseudoSecrets,
-                                                                       Collection<PseudoKeyset> pseudoKeysets,
-                                                                       String correlationId) {
+                                                                       Collection<PseudoKeyset> pseudoKeysets) {
 
         Map<String, PseudoSecret> pseudoSecretsMap = pseudoSecrets.stream().collect(
           Collectors.toMap(PseudoSecret::getName, Function.identity()));
@@ -54,7 +53,6 @@ public class PseudoFuncs {
           Function.identity(),
           rule -> {
               PseudoFuncConfig funcConfig = PseudoFuncConfigFactory.get(rule.getFunc());
-              funcConfig.add(Param.CORRELATION_ID, correlationId);
 
               if (FpeFunc.class.getName().equals(funcConfig.getFuncImpl())) {
                   enrichLegacyFpeFuncConfig(funcConfig, pseudoSecretsMap);
@@ -172,9 +170,5 @@ public class PseudoFuncs {
         public PseudoFuncConfigException(String message, Exception e) {
             super(message, e);
         }
-    }
-
-    public static final class Param {
-        public static final String CORRELATION_ID = "correlationId";
     }
 }

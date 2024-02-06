@@ -73,8 +73,6 @@ public class FieldPseudonymizer {
 
         private Collection<PseudoKeyset> keysets;
 
-        private String correlationId;
-
         public Builder secrets(Collection<PseudoSecret> secrets) {
             this.secrets = secrets;
             return this;
@@ -90,15 +88,10 @@ public class FieldPseudonymizer {
             return this;
         }
 
-        public Builder correlationId(String correlationId) {
-            this.correlationId = correlationId;
-            return this;
-        }
-
         public FieldPseudonymizer build() {
             Objects.requireNonNull(secrets, "PseudoSecrets can't be null");
             Objects.requireNonNull(rules, "PseudoFuncRule collection can't be null");
-            return new FieldPseudonymizer(new PseudoFuncs(rules, secrets, keysets, correlationId));
+            return new FieldPseudonymizer(new PseudoFuncs(rules, secrets, keysets));
         }
     }
 }
