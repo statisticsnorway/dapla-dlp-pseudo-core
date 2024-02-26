@@ -1,19 +1,25 @@
 package no.ssb.dlp.pseudo.core.typeconverter;
 
+import io.micronaut.context.annotation.Bean;
 import io.micronaut.core.convert.ConversionContext;
 import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.convert.TypeConverter;
-import lombok.RequiredArgsConstructor;
+import jakarta.inject.Singleton;
 import no.ssb.dlp.pseudo.core.PseudoSecret;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
 
-public class PseudoSecretTypeConverter implements TypeConverter<Map, PseudoSecret> {
+@Singleton
+@Bean
+public class PseudoSecretTypeConverter implements TypeConverter<Map<String, Object>, PseudoSecret> {
 
     @Override
-    public Optional<PseudoSecret> convert(Map propertyMap, Class<PseudoSecret> targetType, ConversionContext context) {
+    public Optional<PseudoSecret> convert(
+            Map<String, Object> propertyMap,
+            Class<PseudoSecret> targetType,
+            ConversionContext context) {
         PropertyAccessor props = new PropertyAccessor(propertyMap);
         PseudoSecret.PseudoSecretBuilder builder = PseudoSecret.builder()
           .name(props.optionalString("name"))
@@ -35,13 +41,9 @@ public class PseudoSecretTypeConverter implements TypeConverter<Map, PseudoSecre
           : Optional.of(pseudoSecret);
     }
 
-    @RequiredArgsConstructor
-    private static class PropertyAccessor {
-        private final Map propertyMap;
-
-        String optionalString(String key) {
-            return ConversionService.SHARED.convert(propertyMap.get(key), String.class).orElse(null);
+        private record PropertyAccessor(Map<String, Object> propertyMap) {
+            String optionalString(String key) {
+                return ConversionService.SHARED.convert(propertyMap.get(key), String.class).orElse(null);
+            }
         }
-    }
-
 }

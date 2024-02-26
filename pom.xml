@@ -19,7 +19,8 @@
     <jsonassert.version>1.5.1</jsonassert.version>
     <logback.version>1.4.6</logback.version>
     <lombok.version>1.18.30</lombok.version>
-    <micronaut.version>3.9.4</micronaut.version>
+    <micronaut.version>4.3.7</micronaut.version>
+    <micronaut.validation.version>4.4.0</micronaut.validation.version>
     <rxjava-extras.version>0.2.2</rxjava-extras.version>
     <tika.version>1.28.5</tika.version>
     <tink.version>1.8.0</tink.version>
@@ -72,9 +73,9 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>io.micronaut</groupId>
-        <artifactId>micronaut-bom</artifactId>
-        <version>${micronaut.version}</version>
+        <groupId>io.micronaut.platform</groupId>
+        <artifactId>micronaut-platform</artifactId>
+        <version>4.3.0</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -85,21 +86,13 @@
     <dependency>
       <groupId>io.micronaut</groupId>
       <artifactId>micronaut-inject</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.micronaut</groupId>
-      <artifactId>micronaut-validation</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.micronaut</groupId>
-      <artifactId>micronaut-runtime</artifactId>
+      <version>${micronaut.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.micronaut</groupId>
       <artifactId>micronaut-http</artifactId>
+      <version>${micronaut.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -151,6 +144,10 @@
       <version>${rxjava-extras.version}</version>
     </dependency>
     <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.univocity</groupId>
       <artifactId>univocity-parsers</artifactId>
       <version>${univocity-parsers.version}</version>
@@ -200,7 +197,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <build>
     <pluginManagement>
       <plugins>
@@ -241,9 +237,9 @@
                 <version>${micronaut.version}</version>
               </path>
               <path>
-                <groupId>io.micronaut</groupId>
+                <groupId>io.micronaut.validation</groupId>
                 <artifactId>micronaut-validation</artifactId>
-                <version>${micronaut.version}</version>
+                <version>${micronaut.validation.version}</version>
               </path>
             </annotationProcessorPaths>
             <compilerArgs>
@@ -270,9 +266,9 @@
                     <version>${micronaut.version}</version>
                   </path>
                   <path>
-                    <groupId>io.micronaut</groupId>
+                    <groupId>io.micronaut.validation</groupId>
                     <artifactId>micronaut-validation</artifactId>
-                    <version>${micronaut.version}</version>
+                    <version>${micronaut.validation.version}</version>
                   </path>
                 </annotationProcessorPaths>
               </configuration>
