@@ -13,11 +13,11 @@ import java.util.Optional;
 
 @Singleton
 @Bean
-public class PseudoSecretTypeConverter implements TypeConverter<Map<String, Object>, PseudoSecret> {
+public class PseudoSecretTypeConverter implements TypeConverter<Map, PseudoSecret> {
 
     @Override
     public Optional<PseudoSecret> convert(
-            Map<String, Object> propertyMap,
+            Map propertyMap,
             Class<PseudoSecret> targetType,
             ConversionContext context) {
         PropertyAccessor props = new PropertyAccessor(propertyMap);
@@ -41,7 +41,7 @@ public class PseudoSecretTypeConverter implements TypeConverter<Map<String, Obje
           : Optional.of(pseudoSecret);
     }
 
-        private record PropertyAccessor(Map<String, Object> propertyMap) {
+        private record PropertyAccessor(Map propertyMap) {
             String optionalString(String key) {
                 return ConversionService.SHARED.convert(propertyMap.get(key), String.class).orElse(null);
             }
