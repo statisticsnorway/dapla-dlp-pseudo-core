@@ -1,12 +1,15 @@
 package no.ssb.dlp.pseudo.core.func;
 
-import com.google.common.collect.ImmutableList;
 import com.google.crypto.tink.CleartextKeysetHandle;
 import com.google.crypto.tink.DeterministicAead;
 import com.google.crypto.tink.JsonKeysetReader;
 import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.daead.DeterministicAeadConfig;
-import no.ssb.dapla.dlp.pseudo.func.*;
+import no.ssb.dapla.dlp.pseudo.func.PseudoFunc;
+import no.ssb.dapla.dlp.pseudo.func.PseudoFuncConfig;
+import no.ssb.dapla.dlp.pseudo.func.PseudoFuncFactory;
+import no.ssb.dapla.dlp.pseudo.func.PseudoFuncInput;
+import no.ssb.dapla.dlp.pseudo.func.PseudoFuncOutput;
 import no.ssb.dapla.dlp.pseudo.func.tink.daead.TinkDaeadFuncConfig;
 import no.ssb.dapla.dlp.pseudo.func.tink.fpe.TinkFpeFuncConfig;
 import org.junit.jupiter.api.BeforeAll;
@@ -14,7 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 public class DaeadFuncTest {
 
@@ -45,13 +48,11 @@ public class DaeadFuncTest {
         return PseudoFuncFactory.create(config);
     }
 
-    private void transformAndRestore(Object originalVal, Object expectedVal, PseudoFunc func) {
-        Iterable expectedElements = (expectedVal instanceof Iterable) ? (Iterable) expectedVal : ImmutableList.of(expectedVal);
-        Iterable originalElements = (originalVal instanceof Iterable) ? (Iterable) originalVal : ImmutableList.of(originalVal);
+    private void transformAndRestore(String originalVal, String expectedVal, PseudoFunc func) {
         PseudoFuncOutput pseudonymized = func.apply(PseudoFuncInput.of(originalVal));
-        assertThat(pseudonymized.getValues()).containsExactlyElementsOf(expectedElements);
-        PseudoFuncOutput depseudonymized = func.restore(PseudoFuncInput.of(pseudonymized.getValues()));
-        assertThat(depseudonymized.getValues()).containsExactlyElementsOf(originalElements);
+        assertThat(pseudonymized.getValue()).isEqualTo(expectedVal);
+        PseudoFuncOutput depseudonymized = func.restore(PseudoFuncInput.of(pseudonymized.getValue()));
+        assertThat(depseudonymized.getValue()).isEqualTo(originalVal);
     }
 
     @Test
