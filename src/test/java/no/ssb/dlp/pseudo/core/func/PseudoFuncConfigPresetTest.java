@@ -29,12 +29,12 @@ class PseudoFuncConfigPresetTest {
 
         @Override
         public PseudoFuncOutput apply(PseudoFuncInput input) {
-            return new PseudoFuncOutput();
+            return new PseudoFuncOutput(null);
         }
 
         @Override
         public PseudoFuncOutput restore(PseudoFuncInput input) {
-            return new PseudoFuncOutput();
+            return new PseudoFuncOutput(null);
         }
     }
 

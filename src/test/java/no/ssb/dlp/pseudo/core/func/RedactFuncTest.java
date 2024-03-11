@@ -13,7 +13,7 @@ public class RedactFuncTest {
     }
 
     static void assertEqual(PseudoFuncOutput out, Object expected) {
-        assertThat(out.getFirstValue()).isEqualTo(expected);
+        assertThat(out.getValue()).isEqualTo(expected);
     }
 
     @Test
