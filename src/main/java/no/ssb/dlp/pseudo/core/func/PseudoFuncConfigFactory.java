@@ -4,6 +4,8 @@ import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import no.ssb.crypto.tink.fpe.UnknownCharacterStrategy;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFuncConfig;
+import no.ssb.dapla.dlp.pseudo.func.composite.MapAndEncryptFunc;
+import no.ssb.dapla.dlp.pseudo.func.composite.MapAndEncryptFuncConfig;
 import no.ssb.dapla.dlp.pseudo.func.fpe.Alphabets;
 import no.ssb.dapla.dlp.pseudo.func.fpe.FpeFunc;
 import no.ssb.dapla.dlp.pseudo.func.fpe.FpeFuncConfig;
@@ -35,6 +37,8 @@ class PseudoFuncConfigFactory {
           tinkDaeadPseudoFuncConfigPreset(DAEAD),
           tinkFpePseudoFuncConfigPreset(FF31),
           sidMappingPseudoFuncConfigPreset(MAP_SID),
+          sidMappingAndTinkFpePseudoFuncConfigPreset(MAP_SID_FF31),
+          sidMappingAndTinkDaeadPseudoFuncConfigPreset(MAP_SID_DAEAD),
           redactPseudoFuncConfigPreset(REDACT),
           fpePseudoFuncConfigPreset(FPE + "-text", alphabetNameOf(ALPHANUMERIC, WHITESPACE, SYMBOLS)),
           fpePseudoFuncConfigPreset(FPE + "-text_no", alphabetNameOf(ALPHANUMERIC_NO, WHITESPACE, SYMBOLS)),
@@ -50,6 +54,27 @@ class PseudoFuncConfigFactory {
                 .staticParam(MapFuncConfig.Param.CONTEXT, "sid")
                 .requiredParam(String.class, TinkFpeFuncConfig.Param.KEY_ID)
                 .optionalParam(String.class, MapFuncConfig.Param.SNAPSHOT_DATE)
+                .build();
+    }
+
+    private static PseudoFuncConfigPreset sidMappingAndTinkFpePseudoFuncConfigPreset(String funcName) {
+        return PseudoFuncConfigPreset.builder(funcName, MapAndEncryptFunc.class)
+                .staticParam(MapAndEncryptFuncConfig.Param.MAP_FUNC_IMPL, MapFunc.class.getName())
+                .staticParam(MapAndEncryptFuncConfig.Param.ENCRYPTION_FUNC_IMPL, TinkFpeFunc.class.getName())
+                .requiredParam(String.class, TinkFpeFuncConfig.Param.KEY_ID)
+                .optionalParam(String.class, MapFuncConfig.Param.SNAPSHOT_DATE)
+                .optionalParam(UnknownCharacterStrategy.class, TinkFpeFuncConfig.Param.UNKNOWN_CHARACTER_STRATEGY, UnknownCharacterStrategy.FAIL)
+                .optionalParam(String.class, TinkFpeFuncConfig.Param.TWEAK)
+                .optionalParam(Character.class, TinkFpeFuncConfig.Param.REDACT_CHAR)
+                .build();
+    }
+
+    private static PseudoFuncConfigPreset sidMappingAndTinkDaeadPseudoFuncConfigPreset(String funcName) {
+        return PseudoFuncConfigPreset.builder(funcName, MapAndEncryptFunc.class)
+                .staticParam(MapAndEncryptFuncConfig.Param.MAP_FUNC_IMPL, MapFunc.class.getName())
+                .staticParam(MapAndEncryptFuncConfig.Param.ENCRYPTION_FUNC_IMPL, TinkDaeadFunc.class.getName())
+                .optionalParam(String.class, MapFuncConfig.Param.SNAPSHOT_DATE)
+                .requiredParam(String.class, TinkDaeadFuncConfig.Param.KEY_ID)
                 .build();
     }
 

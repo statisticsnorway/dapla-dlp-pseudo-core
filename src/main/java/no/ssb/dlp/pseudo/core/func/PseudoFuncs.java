@@ -8,6 +8,8 @@ import no.ssb.crypto.tink.fpe.Fpe;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFunc;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFuncConfig;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFuncFactory;
+import no.ssb.dapla.dlp.pseudo.func.composite.MapAndEncryptFunc;
+import no.ssb.dapla.dlp.pseudo.func.composite.MapAndEncryptFuncConfig;
 import no.ssb.dapla.dlp.pseudo.func.fpe.FpeFunc;
 import no.ssb.dapla.dlp.pseudo.func.fpe.FpeFuncConfig;
 import no.ssb.dapla.dlp.pseudo.func.tink.daead.TinkDaeadFunc;
@@ -56,16 +58,32 @@ public class PseudoFuncs {
 
               if (FpeFunc.class.getName().equals(funcConfig.getFuncImpl())) {
                   enrichLegacyFpeFuncConfig(funcConfig, pseudoSecretsMap);
-              }
-              else if (TinkDaeadFunc.class.getName().equals(funcConfig.getFuncImpl())) {
+              } else if (TinkDaeadFunc.class.getName().equals(funcConfig.getFuncImpl())) {
                   enrichTinkDaeadFuncConfig(funcConfig, pseudoKeysetMap, pseudoSecrets);
-              }
-              else if (TinkFpeFunc.class.getName().equals(funcConfig.getFuncImpl())) {
+              } else if (TinkFpeFunc.class.getName().equals(funcConfig.getFuncImpl())) {
                   enrichTinkFpeFuncConfig(funcConfig, pseudoKeysetMap, pseudoSecrets);
+              } else if (MapAndEncryptFunc.class.getName().equals(funcConfig.getFuncImpl())) {
+                  // Repeat the above enrichments for MapAndEncryptFunc
+                  enrichMapAndEncryptFunc(funcConfig, pseudoKeysetMap, pseudoSecretsMap, pseudoSecrets);
               }
-
               return funcConfig;
           }));
+    }
+
+    private static void enrichMapAndEncryptFunc(PseudoFuncConfig funcConfig,
+                                                Map<String, PseudoKeyset> pseudoKeysetMap,
+                                                Map<String, PseudoSecret> pseudoSecretsMap,
+                                                Collection<PseudoSecret> pseudoSecrets) {
+        if (FpeFunc.class.getName().equals(funcConfig
+                .getRequired(MapAndEncryptFuncConfig.Param.ENCRYPTION_FUNC_IMPL, String.class))) {
+            enrichLegacyFpeFuncConfig(funcConfig, pseudoSecretsMap);
+        } else if (TinkDaeadFunc.class.getName().equals(funcConfig
+                .getRequired(MapAndEncryptFuncConfig.Param.ENCRYPTION_FUNC_IMPL, String.class))) {
+            enrichTinkDaeadFuncConfig(funcConfig, pseudoKeysetMap, pseudoSecrets);
+        } else if (TinkFpeFunc.class.getName().equals(funcConfig
+                .getRequired(MapAndEncryptFuncConfig.Param.ENCRYPTION_FUNC_IMPL, String.class))) {
+            enrichTinkFpeFuncConfig(funcConfig, pseudoKeysetMap, pseudoSecrets);
+        }
     }
 
     private static void enrichLegacyFpeFuncConfig(PseudoFuncConfig funcConfig, Map<String, PseudoSecret> pseudoSecretsMap) {
