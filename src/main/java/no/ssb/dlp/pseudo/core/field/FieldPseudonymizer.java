@@ -2,6 +2,7 @@ package no.ssb.dlp.pseudo.core.field;
 
 import no.ssb.dapla.dlp.pseudo.func.PseudoFuncInput;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFuncOutput;
+import no.ssb.dapla.dlp.pseudo.func.TransformDirection;
 import no.ssb.dlp.pseudo.core.PseudoException;
 import no.ssb.dlp.pseudo.core.PseudoKeyset;
 import no.ssb.dlp.pseudo.core.PseudoOperation;
@@ -41,7 +42,7 @@ public class FieldPseudonymizer {
     public void init(FieldDescriptor field, String varValue) {
         Optional<PseudoFuncRuleMatch> match = pseudoFuncs.findPseudoFunc(field);
         if (match.isPresent()) {
-            match.get().getFunc().init(PseudoFuncInput.of(varValue));
+            match.get().getFunc().init(PseudoFuncInput.of(varValue), TransformDirection.APPLY);
         }
     }
 

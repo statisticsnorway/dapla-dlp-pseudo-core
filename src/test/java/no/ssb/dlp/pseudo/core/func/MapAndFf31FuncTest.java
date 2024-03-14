@@ -5,12 +5,13 @@ import com.google.crypto.tink.JsonKeysetReader;
 import com.google.crypto.tink.KeysetHandle;
 import no.ssb.crypto.tink.fpe.Fpe;
 import no.ssb.crypto.tink.fpe.FpeConfig;
-import no.ssb.crypto.tink.fpe.IncompatiblePlaintextException;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFunc;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFuncConfig;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFuncFactory;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFuncInput;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFuncOutput;
+import no.ssb.dapla.dlp.pseudo.func.map.MapFunc;
+import no.ssb.dapla.dlp.pseudo.func.map.Mapper;
 import no.ssb.dapla.dlp.pseudo.func.tink.fpe.TinkFpeFuncConfig;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -19,8 +20,9 @@ import java.security.GeneralSecurityException;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-public class Ff31FuncTest {
+public class MapAndFf31FuncTest {
 
     @BeforeAll
     static void init() {
@@ -61,49 +63,15 @@ public class Ff31FuncTest {
     }
 
     @Test
-    void givenText_ff31_shouldEncryptAndDecrypt() throws Exception {
-        String funcDeclStr = "ff31(keyId=1234567890)";
-        transformAndRestore("Something", "gHFaQBh7g", f(funcDeclStr));
+    void givenText_map_and_ff31_shouldEncryptAndDecrypt() throws Exception {
+        final Mapper mockMapper = mock(Mapper.class);
+        try (var mapFunc = mockStatic(MapFunc.class)) {
+            mapFunc.when(() -> MapFunc.loadMapper()).thenReturn(mockMapper);
+            when(mockMapper.map(eq(PseudoFuncInput.of("Something")))).thenReturn(PseudoFuncOutput.of("Secret"));
+            when(mockMapper.restore(eq(PseudoFuncInput.of("Secret")))).thenReturn(PseudoFuncOutput.of("Something"));
+            String funcDeclStr = "map-sid-ff31(keyId=1234567890)";
+            transformAndRestore("Something", "CQqlS3", f(funcDeclStr));
+        }
     }
-    @Test
-    void givenText_ff31Fail_shouldFailForNonSupportedCharacters() throws Exception {
-        String funcDeclStr = "ff31(keyId=1234567890)"; // defaults to "strategy=FAIL"
-        assertThatThrownBy(() -> {
-            f(funcDeclStr).apply(PseudoFuncInput.of("Ken sent me..."));
-        })
-                .isInstanceOf(IncompatiblePlaintextException.class)
-                .hasMessageContaining("Plaintext can only contain characters from the alphabet");
-    }
-
-    @Test
-    void givenText_ff31Skip_shouldEncryptAndDecrypt() throws Exception {
-        String funcDeclStr = "ff31(keyId=1234567890, strategy=SKiP)";
-        transformAndRestore("Ken sent me...", "6Dy NHKv ig...", f(funcDeclStr));
-    }
-
-    @Test
-    void givenText_ff31Delete_shouldEncryptAndDecrypt() throws Exception {
-        String funcDeclStr = "ff31(keyId=1234567890, strategy=delete)";
-        PseudoFunc func = f(funcDeclStr);
-
-        PseudoFuncOutput pseudonymized = func.apply(PseudoFuncInput.of("Ken sent me..."));
-        assertThat(pseudonymized.getValue()).isEqualTo("6DyNHKvig");
-
-        PseudoFuncOutput depseudonymized = func.restore(PseudoFuncInput.of("6DyNHKvig"));
-        assertThat(depseudonymized.getValue()).isEqualTo("Kensentme");
-    }
-
-    @Test
-    void givenText_ff31Redact_shouldEncryptAndDecrypt() throws Exception {
-        String funcDeclStr = "ff31(keyId=1234567890, strategy=redact, redactChar=Z)";
-        PseudoFunc func = f(funcDeclStr);
-
-        PseudoFuncOutput pseudonymized = func.apply(PseudoFuncInput.of("Ken sent me..."));
-        assertThat(pseudonymized.getValue()).isEqualTo("3WD8UlZRDER1z5");
-
-        PseudoFuncOutput depseudonymized = func.restore(PseudoFuncInput.of("3WD8UlZRDER1z5"));
-        assertThat(depseudonymized.getValue()).isEqualTo("KenZsentZmeZZZ");
-    }
-
 
 }

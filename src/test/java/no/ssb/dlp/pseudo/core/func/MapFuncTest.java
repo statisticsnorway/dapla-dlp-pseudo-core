@@ -4,6 +4,7 @@ import no.ssb.dapla.dlp.pseudo.func.PseudoFunc;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFuncConfig;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFuncFactory;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFuncInput;
+import no.ssb.dapla.dlp.pseudo.func.TransformDirection;
 import no.ssb.dapla.dlp.pseudo.func.map.MapFunc;
 import no.ssb.dapla.dlp.pseudo.func.map.Mapper;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,7 @@ public class MapFuncTest {
             mapFunc.when(() -> MapFunc.loadMapper()).thenReturn(mockMapper);
             String funcDeclStr = "map-sid(keyId=1284924461, snapshotDate=2023-05-21)";
             PseudoFunc func = f(funcDeclStr);
-            func.init(PseudoFuncInput.of("50607080901"));
+            func.init(PseudoFuncInput.of("50607080901"), TransformDirection.APPLY);
         }
         // Check that the mockMapper has received the versionTimestamp
         ArgumentCaptor<Map> argumentsCaptured = ArgumentCaptor.forClass(Map.class);
