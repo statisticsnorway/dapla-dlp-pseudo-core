@@ -54,13 +54,7 @@ public class MapTraverser {
 
     static Object processValue(Object value, String path, ValueInterceptor interceptor) {
         String newValue = interceptor.apply(new FieldDescriptor(path), (value == null) ? null : String.valueOf(value));
-        if (newValue != null) {
-            return (value == null)
-              ? newValue
-              : FromString.convert(newValue, value.getClass());
-        }
-
-        return value;
+        return (value == null) ? newValue : FromString.convert(newValue, value.getClass());
     }
 
     private static boolean isTraversable(Object o) {
