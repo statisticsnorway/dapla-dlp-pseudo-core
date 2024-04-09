@@ -9,6 +9,7 @@ import no.ssb.dapla.dlp.pseudo.func.composite.MapAndEncryptFuncConfig;
 import no.ssb.dapla.dlp.pseudo.func.fpe.Alphabets;
 import no.ssb.dapla.dlp.pseudo.func.fpe.FpeFunc;
 import no.ssb.dapla.dlp.pseudo.func.fpe.FpeFuncConfig;
+import no.ssb.dapla.dlp.pseudo.func.map.MapFailureStrategy;
 import no.ssb.dapla.dlp.pseudo.func.map.MapFunc;
 import no.ssb.dapla.dlp.pseudo.func.map.MapFuncConfig;
 import no.ssb.dapla.dlp.pseudo.func.redact.RedactFunc;
@@ -54,6 +55,7 @@ class PseudoFuncConfigFactory {
                 .staticParam(MapFuncConfig.Param.CONTEXT, "sid")
                 .requiredParam(String.class, TinkFpeFuncConfig.Param.KEY_ID)
                 .optionalParam(String.class, MapFuncConfig.Param.SNAPSHOT_DATE)
+                .optionalParam(MapFailureStrategy.class, MapFuncConfig.Param.MAP_FAILURE_STRATEGY, MapFailureStrategy.RETURN_ORIGINAL)
                 .build();
     }
 
@@ -66,6 +68,7 @@ class PseudoFuncConfigFactory {
                 .optionalParam(UnknownCharacterStrategy.class, TinkFpeFuncConfig.Param.UNKNOWN_CHARACTER_STRATEGY, UnknownCharacterStrategy.FAIL)
                 .optionalParam(String.class, TinkFpeFuncConfig.Param.TWEAK)
                 .optionalParam(Character.class, TinkFpeFuncConfig.Param.REDACT_CHAR)
+                .optionalParam(MapFailureStrategy.class, MapFuncConfig.Param.MAP_FAILURE_STRATEGY, MapFailureStrategy.RETURN_ORIGINAL)
                 .build();
     }
 
@@ -75,6 +78,7 @@ class PseudoFuncConfigFactory {
                 .staticParam(MapAndEncryptFuncConfig.Param.ENCRYPTION_FUNC_IMPL, TinkDaeadFunc.class.getName())
                 .optionalParam(String.class, MapFuncConfig.Param.SNAPSHOT_DATE)
                 .requiredParam(String.class, TinkDaeadFuncConfig.Param.KEY_ID)
+                .optionalParam(MapFailureStrategy.class, MapFuncConfig.Param.MAP_FAILURE_STRATEGY, MapFailureStrategy.RETURN_ORIGINAL)
                 .build();
     }
 
