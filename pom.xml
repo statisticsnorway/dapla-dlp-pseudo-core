@@ -19,7 +19,7 @@
     <jsonassert.version>1.5.1</jsonassert.version>
     <logback.version>1.4.6</logback.version>
     <lombok.version>1.18.30</lombok.version>
-    <micronaut.version>4.3.7</micronaut.version>
+    <micronaut.version>4.9.11</micronaut.version>
     <micronaut.validation.version>4.4.0</micronaut.validation.version>
     <rxjava-extras.version>0.2.2</rxjava-extras.version>
     <tika.version>1.28.5</tika.version>
