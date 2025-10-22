@@ -11,7 +11,12 @@ release-dryrun: ## Simulate a release in order to detect any issues
 
 .PHONY: release
 release: ## Release a new version. Update POMs and tag the new version in git
-	git push origin master:release
+	@set -e ; \
+    git checkout master && \
+    git pull && \
+    git checkout release && \
+    git merge master && \
+    git push
 
 .PHONY: help
 help:

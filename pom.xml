@@ -26,6 +26,7 @@
     <tink.version>1.8.0</tink.version>
     <univocity-parsers.version>2.9.1</univocity-parsers.version>
     <zip4j.version>2.11.5</zip4j.version>
+    <caffeine.version>3.2.2</caffeine.version>
 
     <!-- Plugin/extension versions -->
     <artifactregistry-maven-wagon.version>2.1.4</artifactregistry-maven-wagon.version>
@@ -151,6 +152,11 @@
       <groupId>com.univocity</groupId>
       <artifactId>univocity-parsers</artifactId>
       <version>${univocity-parsers.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.ben-manes.caffeine</groupId>
+      <artifactId>caffeine</artifactId>
+      <version>${caffeine.version}</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
