@@ -1,6 +1,7 @@
 package no.ssb.dlp.pseudo.core.func;
 
 import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.google.crypto.tink.*;
 import no.ssb.crypto.tink.fpe.Fpe;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFunc;
@@ -22,7 +23,6 @@ import no.ssb.dlp.pseudo.core.exception.NoSuchPseudoKeyException;
 import no.ssb.dlp.pseudo.core.field.FieldDescriptor;
 import no.ssb.dlp.pseudo.core.tink.model.EncryptedKeysetWrapper;
 import no.ssb.dlp.pseudo.core.util.Json;
-import com.github.benmanes.caffeine.cache.Caffeine;
 
 import java.security.GeneralSecurityException;
 import java.time.Duration;
@@ -33,16 +33,13 @@ import java.util.stream.Collectors;
 public class PseudoFuncs {
 
     private final Map<PseudoFuncRule, PseudoFunc> ruleToFuncMap = new LinkedHashMap<>();
-    private final Cache<String, Aead> aeadCache =
-            Caffeine.newBuilder()
-                    .maximumSize(2000)
-                    .expireAfterWrite(Duration.ofMinutes(2))
-                    .build();
+    private final LoadingCache<String, Aead> aeadCache;
 
 
     //TODO: Validate that all required secrets are available
     public PseudoFuncs(Collection<PseudoFuncRule> rules, Collection<PseudoSecret> pseudoSecrets,
-                       Collection<PseudoKeyset> keysets) {
+                       Collection<PseudoKeyset> keysets, LoadingCache<String, Aead> aeadCache) {
+        this.aeadCache = aeadCache;
         Map<PseudoFuncRule, PseudoFuncConfig> ruleToPseudoFuncConfigs = initPseudoFuncConfigs(rules, pseudoSecrets, keysets);
         rules.forEach(rule -> ruleToFuncMap.put(rule, PseudoFuncFactory.create(ruleToPseudoFuncConfigs.get(rule))));
     }
@@ -124,14 +121,8 @@ public class PseudoFuncs {
         try {
             String keyUri = keyset.getKekUri().toString();
 
-            Aead masterKey = Optional.ofNullable(this.aeadCache.get(keyUri, k -> {
-                try {
-                    return KmsClients.get(keyUri).getAead(keyUri);
-                } catch (GeneralSecurityException e) {
-                    throw new PseudoFuncConfigException("Error fetching key from KMS:", e);
-                }
-            }
-            )).orElseThrow(() -> new PseudoFuncException("Key material with URI " + keyUri + " not found in cache"));
+            Aead masterKey = Optional.ofNullable(this.aeadCache.get(keyUri))
+                    .orElseThrow(() -> new PseudoFuncException("Key material with URI " + keyUri + " not found in cache"));
 
             KeysetHandle keysetHandle = KeysetHandle.read(
                     JsonKeysetReader.withString(keyset.toJson()),
@@ -169,14 +160,8 @@ public class PseudoFuncs {
         try {
             String keyUri = keyset.getKekUri().toString();
 
-            Aead masterKey = Optional.ofNullable(this.aeadCache.get(keyUri, k -> {
-                        try {
-                            return KmsClients.get(keyUri).getAead(keyUri);
-                        } catch (GeneralSecurityException e) {
-                            throw new PseudoFuncConfigException("Error fetching key from KMS:", e);
-                        }
-                    }
-            )).orElseThrow(() -> new PseudoFuncException("Key material with URI " + keyUri + " not found in cache"));
+            Aead masterKey = Optional.ofNullable(this.aeadCache.get(keyUri))
+                    .orElseThrow(() -> new PseudoFuncException("Key material with URI " + keyUri + " not found in cache"));
 
             KeysetHandle keysetHandle = KeysetHandle.read(
                     JsonKeysetReader.withString(keyset.toJson()),

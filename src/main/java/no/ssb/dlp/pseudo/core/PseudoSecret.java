@@ -16,6 +16,7 @@ import java.util.Base64;
 @Builder
 public class PseudoSecret implements Serializable {
     private String name;
+
     private String id;
     private String version;
     private byte[] content;
@@ -48,5 +49,4 @@ public class PseudoSecret implements Serializable {
             throw new PseudoException("Invalid secret. Content must be base64 encoded.");
         }
     }
-
 }
