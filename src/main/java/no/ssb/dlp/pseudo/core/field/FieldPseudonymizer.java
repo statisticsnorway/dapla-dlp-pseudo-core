@@ -1,5 +1,8 @@
 package no.ssb.dlp.pseudo.core.field;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.LoadingCache;
+import com.google.crypto.tink.Aead;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFuncInput;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFuncOutput;
 import no.ssb.dapla.dlp.pseudo.func.TransformDirection;
@@ -71,7 +74,7 @@ public class FieldPseudonymizer {
     public static class Builder {
         private Collection<PseudoSecret> secrets;
         private Collection<PseudoFuncRule> rules;
-
+        private LoadingCache<String, Aead> aeadCache;
         private Collection<PseudoKeyset> keysets;
 
         public Builder secrets(Collection<PseudoSecret> secrets) {
@@ -84,6 +87,11 @@ public class FieldPseudonymizer {
             return this;
         }
 
+        public Builder aeadCache(LoadingCache<String, Aead> aeadCache) {
+            this.aeadCache = aeadCache;
+            return this;
+        }
+
         public Builder keysets(Collection<PseudoKeyset> keysets) {
             this.keysets = keysets;
             return this;
@@ -92,7 +100,8 @@ public class FieldPseudonymizer {
         public FieldPseudonymizer build() {
             Objects.requireNonNull(secrets, "PseudoSecrets can't be null");
             Objects.requireNonNull(rules, "PseudoFuncRule collection can't be null");
-            return new FieldPseudonymizer(new PseudoFuncs(rules, secrets, keysets));
+            Objects.requireNonNull(aeadCache, "AeadCache can't be null");
+            return new FieldPseudonymizer(new PseudoFuncs(rules, secrets, keysets, aeadCache));
         }
     }
 }

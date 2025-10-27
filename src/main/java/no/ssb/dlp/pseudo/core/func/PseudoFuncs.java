@@ -1,12 +1,12 @@
 package no.ssb.dlp.pseudo.core.func;
 
-import com.google.crypto.tink.DeterministicAead;
-import com.google.crypto.tink.JsonKeysetReader;
-import com.google.crypto.tink.KeysetHandle;
-import com.google.crypto.tink.KmsClients;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.LoadingCache;
+import com.google.crypto.tink.*;
 import no.ssb.crypto.tink.fpe.Fpe;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFunc;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFuncConfig;
+import no.ssb.dapla.dlp.pseudo.func.PseudoFuncException;
 import no.ssb.dapla.dlp.pseudo.func.PseudoFuncFactory;
 import no.ssb.dapla.dlp.pseudo.func.composite.MapAndEncryptFunc;
 import no.ssb.dapla.dlp.pseudo.func.composite.MapAndEncryptFuncConfig;
@@ -24,6 +24,8 @@ import no.ssb.dlp.pseudo.core.field.FieldDescriptor;
 import no.ssb.dlp.pseudo.core.tink.model.EncryptedKeysetWrapper;
 import no.ssb.dlp.pseudo.core.util.Json;
 
+import java.security.GeneralSecurityException;
+import java.time.Duration;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -31,17 +33,19 @@ import java.util.stream.Collectors;
 public class PseudoFuncs {
 
     private final Map<PseudoFuncRule, PseudoFunc> ruleToFuncMap = new LinkedHashMap<>();
+    private final LoadingCache<String, Aead> aeadCache;
 
 
     //TODO: Validate that all required secrets are available
     public PseudoFuncs(Collection<PseudoFuncRule> rules, Collection<PseudoSecret> pseudoSecrets,
-                       Collection<PseudoKeyset> keysets) {
+                       Collection<PseudoKeyset> keysets, LoadingCache<String, Aead> aeadCache) {
+        this.aeadCache = aeadCache;
         Map<PseudoFuncRule, PseudoFuncConfig> ruleToPseudoFuncConfigs = initPseudoFuncConfigs(rules, pseudoSecrets, keysets);
         rules.forEach(rule -> ruleToFuncMap.put(rule, PseudoFuncFactory.create(ruleToPseudoFuncConfigs.get(rule))));
     }
 
     // TODO: Move these init functions elsewhere?
-    static Map<PseudoFuncRule, PseudoFuncConfig> initPseudoFuncConfigs(Collection<PseudoFuncRule> pseudoRules,
+    Map<PseudoFuncRule, PseudoFuncConfig> initPseudoFuncConfigs(Collection<PseudoFuncRule> pseudoRules,
                                                                        Collection<PseudoSecret> pseudoSecrets,
                                                                        Collection<PseudoKeyset> pseudoKeysets) {
 
@@ -70,7 +74,7 @@ public class PseudoFuncs {
           }));
     }
 
-    private static void enrichMapAndEncryptFunc(PseudoFuncConfig funcConfig,
+    private void enrichMapAndEncryptFunc(PseudoFuncConfig funcConfig,
                                                 Map<String, PseudoKeyset> pseudoKeysetMap,
                                                 Map<String, PseudoSecret> pseudoSecretsMap,
                                                 Collection<PseudoSecret> pseudoSecrets) {
@@ -86,7 +90,7 @@ public class PseudoFuncs {
         }
     }
 
-    private static void enrichLegacyFpeFuncConfig(PseudoFuncConfig funcConfig, Map<String, PseudoSecret> pseudoSecretsMap) {
+    private void enrichLegacyFpeFuncConfig(PseudoFuncConfig funcConfig, Map<String, PseudoSecret> pseudoSecretsMap) {
         String secretId = funcConfig.getRequired(FpeFuncConfig.Param.KEY_ID, String.class);
         if (! pseudoSecretsMap.containsKey(secretId)) {
             throw new PseudoException("No secret found for FPE pseudo func with " + FpeFuncConfig.Param.KEY_ID + "=" + secretId);
@@ -94,7 +98,7 @@ public class PseudoFuncs {
         funcConfig.add(FpeFuncConfig.Param.KEY_DATA, pseudoSecretsMap.get(secretId).getBase64EncodedContent());
     }
 
-    private static void enrichTinkDaeadFuncConfig(PseudoFuncConfig funcConfig, Map<String, PseudoKeyset> keysetMap, Collection<PseudoSecret> pseudoSecrets) {
+    private void enrichTinkDaeadFuncConfig(PseudoFuncConfig funcConfig, Map<String, PseudoKeyset> keysetMap, Collection<PseudoSecret> pseudoSecrets) {
         String dekId = funcConfig.getRequired(TinkDaeadFuncConfig.Param.KEY_ID, String.class);
 
         // TODO: Support creating new key material instead of failing if none found?
@@ -116,9 +120,13 @@ public class PseudoFuncs {
 
         try {
             String keyUri = keyset.getKekUri().toString();
+
+            Aead masterKey = Optional.ofNullable(this.aeadCache.get(keyUri))
+                    .orElseThrow(() -> new PseudoFuncException("Key material with URI " + keyUri + " not found in cache"));
+
             KeysetHandle keysetHandle = KeysetHandle.read(
                     JsonKeysetReader.withString(keyset.toJson()),
-                    KmsClients.get(keyUri).getAead(keyUri)
+                    masterKey
             );
 
             DeterministicAead daead = keysetHandle.getPrimitive(DeterministicAead.class);
@@ -129,7 +137,7 @@ public class PseudoFuncs {
         }
     }
 
-    private static void enrichTinkFpeFuncConfig(PseudoFuncConfig funcConfig, Map<String, PseudoKeyset> keysetMap, Collection<PseudoSecret> pseudoSecrets) {
+    private void enrichTinkFpeFuncConfig(PseudoFuncConfig funcConfig, Map<String, PseudoKeyset> keysetMap, Collection<PseudoSecret> pseudoSecrets) {
         String dekId = funcConfig.getRequired(TinkFpeFuncConfig.Param.KEY_ID, String.class);
 
         // TODO: Support creating new key material instead of failing if none found?
@@ -151,9 +159,13 @@ public class PseudoFuncs {
 
         try {
             String keyUri = keyset.getKekUri().toString();
+
+            Aead masterKey = Optional.ofNullable(this.aeadCache.get(keyUri))
+                    .orElseThrow(() -> new PseudoFuncException("Key material with URI " + keyUri + " not found in cache"));
+
             KeysetHandle keysetHandle = KeysetHandle.read(
                     JsonKeysetReader.withString(keyset.toJson()),
-                    KmsClients.get(keyUri).getAead(keyUri)
+                    masterKey
             );
 
             Fpe fpe = keysetHandle.getPrimitive(Fpe.class);
