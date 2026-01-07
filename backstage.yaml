@@ -1,0 +1,20 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: pseudo-core
+  title: Pseudo Core
+  description: |
+    Core library for enabling pseudonymization functionality in dapla applications.
+  tags:
+    - java
+    - micronaut
+    - docker
+    - encryption
+  annotations:
+    github.com/project-slug: statisticsnorway/dapla-dlp-pseudo-core
+spec:
+  type: library
+  owner: dapla-stat-developers
+  lifecycle: production
+  dependsOn:
+    - "component:pseudo-func"
