@@ -25,6 +25,14 @@ jobs:
           distribution: zulu
           cache: maven
 
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v1.1.1
+        with:
+          workload_identity_provider: "projects/848539402404/locations/global/workloadIdentityPools/gh-actions/providers/gh-actions"
+          service_account: "gh-actions-dapla-pseudo@artifact-registry-5n.iam.gserviceaccount.com"
+          token_format: access_token
+
       - name: Build with Maven
         run: mvn --batch-mode -P ssb-gar package
 
@@ -53,13 +61,6 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 
-      - name: Authenticate to Google Cloud
-        id: auth
-        uses: google-github-actions/auth@v1.1.1
-        with:
-          workload_identity_provider: "projects/848539402404/locations/global/workloadIdentityPools/gh-actions/providers/gh-actions"
-          service_account: "gh-actions-dapla-pseudo@artifact-registry-5n.iam.gserviceaccount.com"
-          token_format: access_token
 
       - name: Build with Maven and deploy to Artifact Registry
         if: success()
