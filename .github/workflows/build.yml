@@ -63,4 +63,4 @@ jobs:
 
       - name: Build with Maven and deploy to Artifact Registry
         if: success()
-        run: mvn --batch-mode -P ssb-bip deploy
+        run: mvn --batch-mode -P ssb-gar deploy
