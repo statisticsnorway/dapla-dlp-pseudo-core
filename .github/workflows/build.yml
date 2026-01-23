@@ -14,7 +14,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
-
+      security-events: write
     steps:
       - uses: actions/checkout@v3
 
@@ -25,6 +25,34 @@ jobs:
           distribution: zulu
           cache: maven
 
+      - name: Build with Maven
+        run: mvn --batch-mode -P ssb-bip package
+
+      - name: Fail build on High/Critical Vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          format: 'table'
+          scan-ref: '.'
+          severity: 'HIGH,CRITICAL'
+          ignore-unfixed: true
+          exit-code: 1
+
+      - name: Run Trivy vulnerability scanner (SARIF for reporting)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          ignore-unfixed: true
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          skip-setup-trivy: true
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: 'trivy-results.sarif'
+
       - name: Authenticate to Google Cloud
         id: auth
         uses: google-github-actions/auth@v1.1.1
@@ -34,15 +62,5 @@ jobs:
           token_format: access_token
 
       - name: Build with Maven and deploy to Artifact Registry
+        if: success()
         run: mvn --batch-mode -P ssb-bip deploy
-
-      - name: Fail build on High/Criticial Vulnerabilities
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: "fs"
-          format: table
-          scan-ref: .
-          severity: HIGH,CRITICAL
-          ignore-unfixed: true
-          exit-code: 1
-          # On a subsequent call to the action we know trivy is already installed so can skip this
