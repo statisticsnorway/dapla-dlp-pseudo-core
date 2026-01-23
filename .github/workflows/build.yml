@@ -26,7 +26,7 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        run: mvn --batch-mode -P ssb-bip package
+        run: mvn --batch-mode -P ssb-gar package
 
       - name: Fail build on High/Critical Vulnerabilities
         uses: aquasecurity/trivy-action@master
