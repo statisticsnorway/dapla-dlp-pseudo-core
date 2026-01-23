@@ -388,7 +388,7 @@
       </build>
     </profile>
     <profile>
-      <id>ssb-gar</id>
+      <id>ssb-bip</id>
       <distributionManagement>
         <repository>
           <id>artifact-registry</id>
