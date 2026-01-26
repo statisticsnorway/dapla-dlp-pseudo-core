@@ -32,7 +32,6 @@ jobs:
           workload_identity_provider: "projects/848539402404/locations/global/workloadIdentityPools/gh-actions/providers/gh-actions"
           service_account: "gh-actions-dapla-pseudo@artifact-registry-5n.iam.gserviceaccount.com"
           token_format: access_token
-
       - name: Build with Maven
         run: mvn --batch-mode -P ssb-gar package
 
@@ -61,7 +60,10 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 
+      - name: Build and test with Maven
+        if: github.event_name == 'pull_request'
+        run: mvn --batch-mode -P ssb-bip clean test
 
       - name: Build with Maven and deploy to Artifact Registry
-        if: success()
-        run: mvn --batch-mode -P ssb-gar deploy
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master' && success()
+        run: mvn --batch-mode -P ssb-bip deploy -Dmaven.javadoc.skip=true
