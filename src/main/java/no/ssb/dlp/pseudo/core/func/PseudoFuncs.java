@@ -1,6 +1,7 @@
 package no.ssb.dlp.pseudo.core.func;
 
 import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.google.crypto.tink.*;
 import no.ssb.crypto.tink.fpe.Fpe;
@@ -24,13 +25,22 @@ import no.ssb.dlp.pseudo.core.field.FieldDescriptor;
 import no.ssb.dlp.pseudo.core.tink.model.EncryptedKeysetWrapper;
 import no.ssb.dlp.pseudo.core.util.Json;
 
-import java.security.GeneralSecurityException;
 import java.time.Duration;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class PseudoFuncs {
+
+    private static final Cache<KeysetPrimitiveCacheKey, DeterministicAead> DAEAD_PRIMITIVE_CACHE = Caffeine.newBuilder()
+            .maximumSize(1000)
+            .expireAfterAccess(Duration.ofMinutes(30))
+            .build();
+
+    private static final Cache<KeysetPrimitiveCacheKey, Fpe> FPE_PRIMITIVE_CACHE = Caffeine.newBuilder()
+            .maximumSize(1000)
+            .expireAfterAccess(Duration.ofMinutes(30))
+            .build();
 
     private final Map<PseudoFuncRule, PseudoFunc> ruleToFuncMap = new LinkedHashMap<>();
     private final LoadingCache<String, Aead> aeadCache;
@@ -118,23 +128,11 @@ public class PseudoFuncs {
                 })
                 .orElseThrow(() -> new NoSuchPseudoKeyException("No keyset with ID=" + dekId));
 
-        try {
-            String keyUri = keyset.getKekUri().toString();
-
-            Aead masterKey = Optional.ofNullable(this.aeadCache.get(keyUri))
-                    .orElseThrow(() -> new PseudoFuncException("Key material with URI " + keyUri + " not found in cache"));
-
-            KeysetHandle keysetHandle = KeysetHandle.read(
-                    JsonKeysetReader.withString(keyset.toJson()),
-                    masterKey
-            );
-
-            DeterministicAead daead = keysetHandle.getPrimitive(DeterministicAead.class);
-            funcConfig.add(TinkDaeadFuncConfig.Param.DAEAD, daead);
-        }
-        catch (Exception e) {
-            throw new PseudoFuncConfigException("Error populating DaeadFuncConfig", e);
-        }
+        String keyUri = keyset.getKekUri().toString();
+        String keysetJson = keyset.toJson();
+        KeysetPrimitiveCacheKey cacheKey = new KeysetPrimitiveCacheKey(keyUri, keysetJson);
+        DeterministicAead daead = DAEAD_PRIMITIVE_CACHE.get(cacheKey, this::loadDaeadPrimitive);
+        funcConfig.add(TinkDaeadFuncConfig.Param.DAEAD, daead);
     }
 
     private void enrichTinkFpeFuncConfig(PseudoFuncConfig funcConfig, Map<String, PseudoKeyset> keysetMap, Collection<PseudoSecret> pseudoSecrets) {
@@ -157,21 +155,37 @@ public class PseudoFuncs {
                         })
                         .orElseThrow(() -> new NoSuchPseudoKeyException("No keyset with ID=" + dekId));
 
+        String keyUri = keyset.getKekUri().toString();
+        String keysetJson = keyset.toJson();
+        KeysetPrimitiveCacheKey cacheKey = new KeysetPrimitiveCacheKey(keyUri, keysetJson);
+        Fpe fpe = FPE_PRIMITIVE_CACHE.get(cacheKey, this::loadFpePrimitive);
+        funcConfig.add(TinkFpeFuncConfig.Param.FPE, fpe);
+    }
+
+    private DeterministicAead loadDaeadPrimitive(KeysetPrimitiveCacheKey cacheKey) {
         try {
-            String keyUri = keyset.getKekUri().toString();
-
-            Aead masterKey = Optional.ofNullable(this.aeadCache.get(keyUri))
-                    .orElseThrow(() -> new PseudoFuncException("Key material with URI " + keyUri + " not found in cache"));
-
+            Aead masterKey = Optional.ofNullable(this.aeadCache.get(cacheKey.kekUri()))
+                    .orElseThrow(() -> new PseudoFuncException("Key material with URI " + cacheKey.kekUri() + " not found in cache"));
             KeysetHandle keysetHandle = KeysetHandle.read(
-                    JsonKeysetReader.withString(keyset.toJson()),
+                    JsonKeysetReader.withString(cacheKey.keysetJson()),
                     masterKey
             );
-
-            Fpe fpe = keysetHandle.getPrimitive(Fpe.class);
-            funcConfig.add(TinkFpeFuncConfig.Param.FPE, fpe);
+            return keysetHandle.getPrimitive(DeterministicAead.class);
+        } catch (Exception e) {
+            throw new PseudoFuncConfigException("Error populating DaeadFuncConfig", e);
         }
-        catch (Exception e) {
+    }
+
+    private Fpe loadFpePrimitive(KeysetPrimitiveCacheKey cacheKey) {
+        try {
+            Aead masterKey = Optional.ofNullable(this.aeadCache.get(cacheKey.kekUri()))
+                    .orElseThrow(() -> new PseudoFuncException("Key material with URI " + cacheKey.kekUri() + " not found in cache"));
+            KeysetHandle keysetHandle = KeysetHandle.read(
+                    JsonKeysetReader.withString(cacheKey.keysetJson()),
+                    masterKey
+            );
+            return keysetHandle.getPrimitive(Fpe.class);
+        } catch (Exception e) {
             throw new PseudoFuncConfigException("Error populating Tink FpeFuncConfig", e);
         }
     }
@@ -201,4 +215,6 @@ public class PseudoFuncs {
             super(message, e);
         }
     }
+
+    private record KeysetPrimitiveCacheKey(String kekUri, String keysetJson) {}
 }
