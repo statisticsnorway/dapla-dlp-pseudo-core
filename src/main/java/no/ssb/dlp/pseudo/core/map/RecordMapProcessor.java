@@ -2,6 +2,7 @@ package no.ssb.dlp.pseudo.core.map;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import no.ssb.dlp.pseudo.core.field.FieldDescriptor;
 import no.ssb.dlp.pseudo.core.field.ValueInterceptorChain;
 
 import java.util.Map;
@@ -18,6 +19,14 @@ public class RecordMapProcessor<T> {
 
     public Map<String, Object> process(Map<String, Object> r) {
         return MapTraverser.traverse(r, valueInterceptorChain::apply);
+    }
+
+    public String initField(String fieldPath, String value) {
+        return valueInterceptorChain.init(FieldDescriptor.from(fieldPath), value);
+    }
+
+    public String processField(String fieldPath, String value) {
+        return valueInterceptorChain.apply(FieldDescriptor.from(fieldPath), value);
     }
 
     public boolean hasPreprocessors() {
