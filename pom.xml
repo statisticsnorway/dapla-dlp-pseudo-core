@@ -20,7 +20,7 @@
     <logback.version>1.4.12</logback.version>
     <lombok.version>1.18.30</lombok.version>
     <micronaut.version>4.10.23</micronaut.version>
-    <micronaut.validation.version>4.4.0</micronaut.validation.version>
+    <micronaut.validation.version>4.10.0</micronaut.validation.version>
     <rxjava-extras.version>0.2.2</rxjava-extras.version>
     <tika.version>3.2.3</tika.version>
     <tink.version>1.8.0</tink.version>
