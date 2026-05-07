@@ -8,12 +8,15 @@ on:
 jobs:
   labeler:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
 
       # Reads labels from .github/labels.yml
       - name: Run Labeler
-        uses: crazy-max/ghaction-github-labeler@v4
+        uses: crazy-max/ghaction-github-labeler@f4f6b96e7e747b5416cd470f3cfecf26abaa811e # v4.2.0
         with:
           skip-delete: true
