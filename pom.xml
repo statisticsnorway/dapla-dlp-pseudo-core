@@ -56,10 +56,6 @@
       <url>https://repo.maven.apache.org/maven2</url>
     </repository>
     <repository>
-      <id>jcenter.bintray.com</id>
-      <url>https://jcenter.bintray.com</url>
-    </repository>
-    <repository>
       <id>artifact-registry</id>
       <url>${artifact-registry.url}</url>
       <releases>
